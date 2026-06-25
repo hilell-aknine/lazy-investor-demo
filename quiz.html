@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>איזה משקיע אתה? · השקעות לעצלנים 🦥</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<link href="assets/brand.css" rel="stylesheet">
+<style>
+/* ===== quiz-specific only (tokens + shared classes come from brand.css) ===== */
+.quiz-wrap{min-height:calc(100vh - 40px);display:flex;align-items:center;justify-content:center;padding:30px 20px 60px}
+.quiz-card{background:var(--card);border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow-lg);padding:34px 30px;width:100%;max-width:560px;position:relative;overflow:hidden}
+
+/* step transitions */
+.step{opacity:0;transform:translateY(14px);transition:opacity .32s ease,transform .32s ease}
+.step.in{opacity:1;transform:none}
+.step.out{opacity:0;transform:translateY(-14px);transition:opacity .22s ease,transform .22s ease}
+
+/* intro */
+.center{text-align:center}
+.big-sloth{font-size:76px;line-height:1;display:inline-block;animation:bob .8s ease}
+@keyframes bob{0%{transform:translateY(0) rotate(0)}30%{transform:translateY(-12px) rotate(-8deg)}60%{transform:translateY(0) rotate(6deg)}100%{transform:translateY(0) rotate(0)}}
+.intro-title{font-size:29px;font-weight:900;margin:12px 0 8px;color:var(--ink)}
+.intro-text{color:var(--muted);font-weight:600;font-size:17px;line-height:1.6;margin:0 auto 26px;max-width:430px}
+.full-btn{width:100%;justify-content:center;font-size:18px;padding:16px}
+
+/* question progress */
+.progress-row{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.progress-row .bar{flex:1}
+.progress-row small{color:var(--muted);font-weight:800;white-space:nowrap;font-size:13px}
+
+.q-mascot{font-size:42px;line-height:1;margin-bottom:10px;display:inline-block}
+.q-text{font-size:24px;font-weight:900;line-height:1.4;margin-bottom:22px;color:var(--ink)}
+
+/* options */
+.opts{display:grid;gap:13px}
+.opt{display:flex;align-items:center;gap:14px;text-align:right;width:100%;font-family:inherit;font-size:17px;font-weight:700;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:16px;padding:17px 18px;cursor:pointer;transition:transform .12s,border-color .15s,background .15s,box-shadow .15s}
+.opt:hover:not(:disabled){border-color:var(--green);transform:translateY(-2px);box-shadow:var(--shadow)}
+.opt:active:not(:disabled){transform:translateY(0)}
+.opt:disabled{cursor:default}
+.opt .dot{width:26px;height:26px;flex:none;border-radius:50%;border:2px solid var(--line);transition:.15s;position:relative}
+.opt.sel{border-color:var(--green);background:var(--green-soft);animation:pop .35s ease}
+.opt.sel .dot{border-color:var(--green);background:var(--green)}
+.opt.sel .dot::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:14px;font-weight:900}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.03)}100%{transform:scale(1)}}
+
+.back-link{display:inline-block;margin-top:20px;color:var(--muted);font-weight:700;font-size:15px;cursor:pointer;transition:color .15s}
+.back-link:hover{color:var(--green-deep)}
+.back-link.hide{display:none}
+
+/* result */
+.result .res-emoji{font-size:84px;line-height:1;display:inline-block;animation:bob .8s ease}
+.result h2{font-size:30px;font-weight:900;margin:12px 0 4px;color:var(--ink)}
+.result h2 em{font-style:normal;color:var(--green-deep)}
+.result .res-desc{color:var(--muted);font-weight:600;font-size:17px;line-height:1.65;max-width:440px;margin:0 auto 14px}
+.result .res-line{display:inline-flex;align-items:center;gap:8px;background:var(--yellow-soft);color:#a8780a;font-weight:800;font-size:15px;padding:9px 16px;border-radius:30px;margin-bottom:26px}
+.res-actions{display:grid;gap:11px;max-width:360px;margin:0 auto}
+.res-actions .btn{width:100%;justify-content:center;font-size:17px;padding:15px}
+
+/* confetti */
+.confetti{position:fixed;top:-12px;width:11px;height:14px;z-index:150;border-radius:2px;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(540deg);opacity:.9}}
+
+@media(max-width:560px){
+  .quiz-card{padding:26px 18px}
+  .q-text{font-size:21px}
+  .intro-title{font-size:25px}
+  .opt{font-size:16px;padding:15px 15px}
+}
+</style>
+</head>
+<body>
+
+<div class="demo-flag">🦥 דמו פורטל · <b>השקעות לעצלנים</b> · שאלון התאמה</div>
+
+<main class="quiz-wrap">
+  <div class="quiz-card" id="card"><!-- rendered by JS --></div>
+</main>
+
+<footer><div class="wrap"><div>© השקעות לעצלנים · הדרך הקלה להשקעות פסיביות 🦥</div><div class="credit">נבנה ע"י הלל</div></div></footer>
+
+<script src="data/content.js"></script>
+<script src="assets/portal.js"></script>
+<script>
+(function(){
+  const QUIZ = (window.LAZY && LAZY.quiz) ? LAZY.quiz : null;
+  const QUESTIONS = (QUIZ && Array.isArray(QUIZ.questions)) ? QUIZ.questions : [];
+  const RESULTS = (QUIZ && QUIZ.results) ? QUIZ.results : {};
+  const TOTAL = QUESTIONS.length;
+  const card = document.getElementById('card');
+
+  let answers; // array of chosen type per question index
+
+  function reset(){ answers = new Array(TOTAL).fill(null); }
+
+  /* render with a clean enter transition */
+  function paint(html){
+    card.innerHTML = '<div class="step">' + html + '</div>';
+    const el = card.firstElementChild;
+    requestAnimationFrame(()=>el.classList.add('in'));
+    return el;
+  }
+
+  /* fade out current step, then run next */
+  function transitionTo(next){
+    const el = card.firstElementChild;
+    if(!el){ next(); return; }
+    el.classList.remove('in'); el.classList.add('out');
+    setTimeout(next, 200);
+  }
+
+  function renderIntro(){
+    paint(`
+      <div class="center">
+        <span class="big-sloth">🦥</span>
+        <h1 class="intro-title">בוא נכיר אותך</h1>
+        <p class="intro-text">${QUIZ ? QUIZ.intro : ''}</p>
+        <button class="btn btn-green full-btn" id="startBtn">מתחילים ←</button>
+      </div>`);
+    document.getElementById('startBtn').addEventListener('click', ()=>{
+      transitionTo(()=>renderQuestion(0));
+    });
+  }
+
+  function renderQuestion(i){
+    const q = QUESTIONS[i];
+    const pct = Math.round((i / TOTAL) * 100);
+    paint(`
+      <div class="progress-row">
+        <small>שאלה ${i+1} מתוך ${TOTAL}</small>
+        <div class="bar"><i style="width:${pct}%"></i></div>
+      </div>
+      <span class="q-mascot">🦥</span>
+      <div class="q-text">${q.q}</div>
+      <div class="opts" id="opts">
+        ${q.opts.map((o,idx)=>`
+          <button class="opt${answers[i] && o.type===answers[i] ? ' sel' : ''}" data-idx="${idx}" data-type="${o.type}">
+            <span class="dot"></span><span>${o.t}</span>
+          </button>`).join('')}
+      </div>
+      <span class="back-link${i===0 ? ' hide' : ''}" id="backLink">← חזור</span>`);
+
+    let locked = false;
+    card.querySelectorAll('.opt').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        if(locked) return; locked = true;
+        answers[i] = b.dataset.type;
+        card.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+        b.classList.add('sel');
+        setTimeout(()=>{
+          transitionTo(()=>{
+            if(i+1 >= TOTAL) renderResult();
+            else renderQuestion(i+1);
+          });
+        }, 360);
+      });
+    });
+    const back = document.getElementById('backLink');
+    if(back) back.addEventListener('click', ()=>{
+      if(i===0) return;
+      transitionTo(()=>renderQuestion(i-1));
+    });
+  }
+
+  function tallyWinner(){
+    const counts = {};
+    let winner = null, max = -1;
+    // iterate in question order so first-reached wins ties
+    answers.forEach(t=>{
+      if(!t) return;
+      counts[t] = (counts[t]||0) + 1;
+      if(counts[t] > max){ max = counts[t]; winner = t; }
+    });
+    return winner;
+  }
+
+  function renderResult(){
+    const winner = tallyWinner();
+    const r = (winner && RESULTS[winner]) ? RESULTS[winner] : null;
+    const emoji = r ? r.emoji : '🦥';
+    const title = r ? r.title : 'העצלן';
+    const desc  = r ? r.desc  : 'הכנו לך מסלול מותאם בדיוק בשבילך.';
+
+    paint(`
+      <div class="result center">
+        <span class="res-emoji">${emoji}</span>
+        <h2>אתה: <em>${title}</em></h2>
+        <p class="res-desc">${desc}</p>
+        <div class="res-line">✨ הכנו לך מסלול מותאם</div>
+        <div class="res-actions">
+          <a class="btn btn-green" href="index.html">🚪 כניסה לפורטל שלי</a>
+          <button class="btn btn-yellow" id="againBtn">🔁 ענה שוב</button>
+        </div>
+      </div>`);
+
+    document.getElementById('againBtn').addEventListener('click', ()=>{
+      reset();
+      transitionTo(renderIntro);
+    });
+
+    fireConfetti();
+    if(window.Portal && Portal.toast) Portal.toast('המסלול שלך מוכן! 🦥');
+  }
+
+  function fireConfetti(){
+    const colors = ['#1f9e57','#ffd23f','#ff8a3d','#0f7a40','#fff7d6'];
+    for(let i=0;i<70;i++){
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random()*100 + 'vw';
+      c.style.background = colors[i % colors.length];
+      c.style.animationDuration = (2.4 + Math.random()*1.8) + 's';
+      c.style.animationDelay = (Math.random()*0.5) + 's';
+      if(Math.random()>0.5) c.style.borderRadius='50%';
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(), 4800);
+    }
+  }
+
+  function start(){
+    if(!QUIZ || !TOTAL){
+      paint(`<div class="center"><span class="big-sloth">🦥</span><h1 class="intro-title">השאלון בהכנה</h1><p class="intro-text">נחזור עם השאלות בקרוב. בינתיים אפשר להיכנס לפורטל.</p><a class="btn btn-green full-btn" href="index.html">🚪 לפורטל שלי</a></div>`);
+      return;
+    }
+    reset();
+    renderIntro();
+  }
+
+  start();
+})();
+</script>
+</body>
+</html>

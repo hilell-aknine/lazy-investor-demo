@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>המסלול בתשלום · השקעות לעצלנים 🦥</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<link href="assets/brand.css" rel="stylesheet">
+<style>
+/* ===== page-specific only · tokens & shared classes live in brand.css ===== */
+
+/* hero */
+.hero{position:relative;overflow:hidden;border-radius:var(--radius);margin:26px 0 10px;
+  background:linear-gradient(150deg,var(--green-deep) 0%,var(--green) 62%,#34b86d 100%);
+  color:#fff;box-shadow:var(--shadow-lg)}
+.hero::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(circle at 18% 12%,rgba(255,255,255,.16),transparent 45%),
+             radial-gradient(circle at 86% 96%,rgba(15,36,28,.32),transparent 52%)}
+.hero-in{position:relative;display:grid;grid-template-columns:1.35fr 1fr;gap:30px;align-items:center;padding:46px 40px}
+@media(max-width:900px){.hero-in{grid-template-columns:1fr;padding:34px 24px;text-align:center}}
+.hero .bigsloth{font-size:74px;line-height:1;filter:drop-shadow(0 8px 18px rgba(0,0,0,.25))}
+.hero .pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.16);
+  border:1px solid rgba(255,255,255,.28);padding:6px 14px;border-radius:30px;font-weight:700;font-size:13px;margin:14px 0 8px}
+.hero h1{font-size:38px;font-weight:900;line-height:1.18;margin:8px 0 10px}
+@media(max-width:600px){.hero h1{font-size:29px}}
+.hero .tag{font-size:17px;color:rgba(255,255,255,.92);font-weight:500;max-width:560px}
+@media(max-width:900px){.hero .tag{margin:0 auto}}
+.hero .cta{margin-top:24px}
+.hero .cta .btn{background:var(--yellow);color:#5a4500;font-size:17px;padding:15px 30px;border-radius:16px;
+  box-shadow:0 12px 28px rgba(0,0,0,.22)}
+.hero .cta .btn:hover{filter:brightness(.97);transform:translateY(-2px)}
+
+/* price card inside hero */
+.pricecard{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:22px;
+  padding:26px;backdrop-filter:blur(8px);text-align:center}
+.pricecard .old{color:rgba(255,255,255,.7);text-decoration:line-through;font-size:20px;font-weight:600}
+.pricecard .now{font-size:48px;font-weight:900;line-height:1;margin:6px 0}
+.pricecard .pnote{display:inline-block;background:var(--yellow);color:#5a4500;font-weight:800;font-size:13px;
+  padding:5px 14px;border-radius:20px;margin-top:8px}
+.pricecard .save{margin-top:14px;font-size:14px;color:rgba(255,255,255,.85);font-weight:600}
+
+/* includes grid */
+.inc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:860px){.inc-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.inc-grid{grid-template-columns:1fr}}
+.inc{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;
+  box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s}
+.inc:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.inc .ic{width:50px;height:50px;border-radius:14px;background:var(--green-soft);display:grid;place-items:center;
+  font-size:26px;margin-bottom:14px}
+.inc h4{font-size:17px;font-weight:800;margin-bottom:5px}
+.inc p{color:var(--muted);font-size:14px;line-height:1.5}
+
+/* testimonials */
+.tst-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:860px){.tst-grid{grid-template-columns:1fr}}
+.tst{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;
+  box-shadow:var(--shadow);position:relative}
+.tst .q{font-size:46px;line-height:.5;color:var(--yellow);font-weight:900;font-family:Georgia,serif}
+.tst p{font-size:15px;line-height:1.6;margin:6px 0 16px}
+.tst .who{display:flex;align-items:center;gap:10px}
+.tst .who .av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--green-deep));
+  display:grid;place-items:center;color:#fff;font-weight:800;font-size:15px}
+.tst .who b{font-weight:800;font-size:14px}
+.tst .who small{display:block;color:var(--muted);font-size:12px}
+
+/* why locked note */
+.why{display:flex;gap:16px;align-items:flex-start;background:var(--yellow-soft);
+  border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow)}
+.why .lk{font-size:30px;flex:none}
+.why h4{font-size:17px;font-weight:800;margin-bottom:4px}
+.why p{color:var(--muted);font-size:14px;line-height:1.6}
+
+/* checkout */
+.co-grid{display:grid;grid-template-columns:1.2fr .9fr;gap:24px;align-items:start}
+@media(max-width:820px){.co-grid{grid-template-columns:1fr}}
+.co-form{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow)}
+.co-form h3{font-size:21px;font-weight:900;margin-bottom:4px}
+.co-form .sub{color:var(--muted);font-size:14px;margin-bottom:20px}
+.fld{margin-bottom:15px}
+.fld label{display:block;font-weight:700;font-size:13px;margin-bottom:6px}
+.fld input{width:100%;font-family:inherit;font-size:15px;padding:12px 14px;border-radius:12px;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink);transition:border-color .15s,box-shadow .15s}
+.fld input:focus{outline:0;border-color:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+.fld-row{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:12px}
+@media(max-width:480px){.fld-row{grid-template-columns:1fr}}
+.cardrow{position:relative}
+.cardrow .brandmark{position:absolute;left:14px;top:35px;font-size:18px;opacity:.7}
+.pay-btn{width:100%;justify-content:center;font-size:17px;padding:15px;margin-top:6px}
+.guar{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;margin-top:14px;justify-content:center;text-align:center;line-height:1.5}
+.secure{display:flex;align-items:center;justify-content:center;gap:6px;color:var(--muted);font-size:12px;margin-top:12px}
+
+/* summary */
+.co-sum{background:var(--green-soft);border:1px solid var(--line);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow)}
+.co-sum h4{font-size:16px;font-weight:900;margin-bottom:16px}
+.sline{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.sline:last-of-type{border-bottom:0}
+.sline .muted{color:var(--muted)}
+.sline.total{font-size:20px;font-weight:900;border-top:2px solid var(--green);border-bottom:0;margin-top:8px;padding-top:14px;color:var(--green-deep)}
+.sline.total .old{text-decoration:line-through;color:var(--muted);font-size:14px;font-weight:600;margin-inline-start:8px}
+.co-sum ul{list-style:none;margin-top:16px;display:grid;gap:9px}
+.co-sum ul li{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--ink)}
+.co-sum ul li .ck{color:var(--green);font-weight:900;flex:none}
+
+/* success state */
+.co-success{display:none;text-align:center;padding:40px 28px;background:var(--card);
+  border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-lg)}
+.co-success.show{display:block;animation:pop .4s ease}
+@keyframes pop{from{transform:scale(.96);opacity:0}to{transform:none;opacity:1}}
+.co-success .em{font-size:64px;line-height:1}
+.co-success h3{font-size:25px;font-weight:900;margin:12px 0 8px}
+.co-success p{color:var(--muted);font-size:15px;max-width:440px;margin:0 auto 22px;line-height:1.6}
+.co-success .badges{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:24px}
+.co-success .badges span{background:var(--green-soft);color:var(--green-deep);font-weight:700;font-size:13px;
+  padding:8px 14px;border-radius:30px}
+</style>
+</head>
+<body>
+
+<div class="demo-flag">🦥 דמו פורטל · <b>השקעות לעצלנים</b> · המסלול בתשלום</div>
+
+<header class="topbar"><div class="wrap">
+  <div class="brand"><span class="sloth">🦥</span> השקעות לעצלנים</div>
+  <nav class="nav">
+    <a href="index.html">הבית שלי</a>
+    <a href="lesson.html">הקורס</a>
+    <a href="game.html">משחק תרגול</a>
+    <a href="community.html">הקהילה</a>
+    <a href="calculator.html">מחשבונים</a>
+  </nav>
+  <div class="me"><a href="admin.html" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);font-weight:600" title="מבט הבעלים">⚙️ ניהול</a><a href="profile.html" style="display:flex;align-items:center;gap:10px"><div style="text-align:left"><div style="font-weight:700;line-height:1.1">דנה</div><small>חברה מאז 2026</small></div><div class="avatar">ד</div></a></div>
+</div></header>
+
+<main class="wrap">
+
+  <!-- HERO -->
+  <section class="hero"><div class="hero-in">
+    <div>
+      <span class="pill">🦥 המסלול האישי</span>
+      <h1 id="m-name">המסלול האישי</h1>
+      <p class="tag" id="m-tag">תיאור</p>
+      <div class="cta"><button class="btn" id="m-cta" onclick="goCheckout()">אני רוצה להתחיל</button></div>
+    </div>
+    <div class="bigsloth-wrap" style="display:grid;gap:18px;justify-items:center">
+      <div class="bigsloth">🦥</div>
+      <div class="pricecard">
+        <div class="old" id="m-old">₪0</div>
+        <div class="now" id="m-price">₪0</div>
+        <div class="pnote" id="m-pnote">הערה</div>
+        <div class="save" id="m-save"></div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- INCLUDES -->
+  <section class="block">
+    <div class="head"><h2>מה <em>כלול</em> במסלול</h2></div>
+    <div class="inc-grid" id="m-includes"></div>
+  </section>
+
+  <!-- WHY LOCKED -->
+  <section class="block">
+    <div class="why">
+      <div class="lk">🔒</div>
+      <div>
+        <h4>למה התוכן נעול?</h4>
+        <p>הגעת לכאן כי לחצת על שלב או פרק נעול בפורטל. השלבים הראשונים פתוחים לכולם בחינם, אבל ההמשך, בדיקת שיעורי הבית, הוובינר השבועי והקהילה שמורים לחברי המסלול האישי. ההצטרפות פותחת את כל התוכן בבת אחת.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="block">
+    <div class="head"><h2>חברים <em>מספרים</em></h2></div>
+    <div class="tst-grid" id="m-tst"></div>
+  </section>
+
+  <!-- CHECKOUT -->
+  <section class="block" id="checkout">
+    <div class="head"><h2>השלמת <em>ההצטרפות</em></h2></div>
+
+    <div class="co-grid" id="co-grid">
+      <form class="co-form" id="co-form" novalidate>
+        <h3>פרטי תשלום 🔒</h3>
+        <p class="sub">תשלום מאובטח · זהו דמו, לא מתבצע חיוב אמיתי.</p>
+
+        <div class="fld">
+          <label for="f-name">שם מלא</label>
+          <input id="f-name" type="text" placeholder="דנה כהן" autocomplete="name" required>
+        </div>
+        <div class="fld">
+          <label for="f-email">אימייל</label>
+          <input id="f-email" type="email" placeholder="dana@example.com" autocomplete="email" required>
+        </div>
+        <div class="fld cardrow">
+          <label for="f-card">מספר כרטיס</label>
+          <input id="f-card" type="text" inputmode="numeric" placeholder="4580 1234 5678 9012" maxlength="19" autocomplete="off">
+          <span class="brandmark">💳</span>
+        </div>
+        <div class="fld-row">
+          <div class="fld" style="margin:0">
+            <label for="f-exp">תוקף</label>
+            <input id="f-exp" type="text" inputmode="numeric" placeholder="MM/YY" maxlength="5" autocomplete="off">
+          </div>
+          <div class="fld" style="margin:0">
+            <label for="f-cvv">CVV</label>
+            <input id="f-cvv" type="text" inputmode="numeric" placeholder="123" maxlength="4" autocomplete="off">
+          </div>
+          <div class="fld" style="margin:0">
+            <label for="f-zip">ת.ז.</label>
+            <input id="f-zip" type="text" inputmode="numeric" placeholder="000000000" maxlength="9" autocomplete="off">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-green pay-btn">שלם בבטחה 🔒 <span id="pay-amt"></span></button>
+        <div class="guar">🛡️ <span id="m-guar"></span></div>
+        <div class="secure">🔒 העברה מוצפנת SSL · הפרטים אינם נשמרים בדמו</div>
+      </form>
+
+      <aside class="co-sum">
+        <h4>סיכום הזמנה</h4>
+        <div class="sline"><span class="muted" id="s-name">המסלול</span></div>
+        <div class="sline"><span>מחיר מלא</span><span class="muted" id="s-old">₪0</span></div>
+        <div class="sline"><span>הנחת השקה</span><span style="color:var(--green-deep);font-weight:700" id="s-disc">₪0-</span></div>
+        <div class="sline total"><span>לתשלום</span><span><span id="s-price">₪0</span></span></div>
+        <ul id="s-list"></ul>
+      </aside>
+    </div>
+
+    <!-- success -->
+    <div class="co-success" id="co-success">
+      <div class="em">🎉</div>
+      <h3>ברוך הבא למסלול! 🦥</h3>
+      <p>התשלום בוצע בהצלחה וכל התוכן נפתח עכשיו. כל השלבים, הוובינרים, הקהילה וחוברות העבודה זמינים לך מהרגע הזה.</p>
+      <div class="badges">
+        <span>✓ כל 8 השלבים נפתחו</span>
+        <span>✓ גישה לקהילה</span>
+        <span>✓ וובינר שבועי</span>
+      </div>
+      <a href="index.html" class="btn btn-green" style="font-size:16px;padding:14px 28px">חזרה לבית שלי 🦥</a>
+    </div>
+  </section>
+
+</main>
+
+<footer><div class="wrap"><div>© השקעות לעצלנים · הדרך הקלה להשקעות פסיביות 🦥</div><div class="credit">נבנה ע"י הלל</div></div></footer>
+
+<script src="data/content.js"></script>
+<script src="assets/portal.js"></script>
+<script>
+(function(){
+  const M = (window.LAZY && LAZY.master) || {};
+  const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const numOf = s => parseFloat(String(s||'').replace(/[^\d.]/g,'')) || 0;
+
+  /* hero + price */
+  document.getElementById('m-name').textContent  = M.name || 'המסלול האישי';
+  document.getElementById('m-tag').textContent   = M.tagline || '';
+  document.getElementById('m-cta').textContent   = M.cta || 'אני רוצה להתחיל';
+  document.getElementById('m-old').textContent   = M.oldPrice || '';
+  document.getElementById('m-price').textContent = M.price || '';
+  document.getElementById('m-pnote').textContent = M.priceNote || '';
+
+  const oldN = numOf(M.oldPrice), newN = numOf(M.price), saveN = oldN - newN;
+  if(saveN > 0){ document.getElementById('m-save').textContent = 'חיסכון של ₪' + saveN.toLocaleString('he-IL'); }
+
+  /* includes */
+  document.getElementById('m-includes').innerHTML = (M.includes||[]).map(x=>`
+    <div class="inc">
+      <div class="ic">${esc(x.ic)}</div>
+      <h4>${esc(x.t)}</h4>
+      <p>${esc(x.d)}</p>
+    </div>`).join('');
+
+  /* testimonials */
+  document.getElementById('m-tst').innerHTML = (M.testimonials||[]).map(x=>`
+    <div class="tst">
+      <div class="q">&rdquo;</div>
+      <p>${esc(x.t)}</p>
+      <div class="who">
+        <div class="av">${esc((x.n||'?').trim().charAt(0))}</div>
+        <div><b>${esc(x.n)}</b><small>חבר/ת מסלול</small></div>
+      </div>
+    </div>`).join('');
+
+  /* guarantee + pay amount */
+  document.getElementById('m-guar').textContent = M.guarantee || '';
+  document.getElementById('pay-amt').textContent = M.price ? ('· ' + M.price) : '';
+
+  /* summary */
+  document.getElementById('s-name').textContent  = M.name || 'המסלול';
+  document.getElementById('s-old').textContent   = M.oldPrice || '';
+  document.getElementById('s-disc').textContent  = saveN>0 ? ('₪'+saveN.toLocaleString('he-IL')+'-') : '₪0';
+  document.getElementById('s-price').textContent = M.price || '';
+  document.getElementById('s-list').innerHTML = (M.includes||[]).map(x=>
+    `<li><span class="ck">✓</span> ${esc(x.t)}</li>`).join('');
+
+  /* checkout open helper */
+  window.goCheckout = function(){
+    document.getElementById('checkout').scrollIntoView({behavior:'smooth',block:'start'});
+    setTimeout(()=>{ const n=document.getElementById('f-name'); if(n) n.focus({preventScroll:true}); }, 500);
+  };
+
+  /* light cosmetic formatting for card number */
+  const card = document.getElementById('f-card');
+  if(card){ card.addEventListener('input',()=>{
+    let v = card.value.replace(/\D/g,'').slice(0,16);
+    card.value = v.replace(/(.{4})/g,'$1 ').trim();
+  }); }
+  const exp = document.getElementById('f-exp');
+  if(exp){ exp.addEventListener('input',()=>{
+    let v = exp.value.replace(/\D/g,'').slice(0,4);
+    exp.value = v.length>2 ? v.slice(0,2)+'/'+v.slice(2) : v;
+  }); }
+
+  /* submit → mock success */
+  const form = document.getElementById('co-form');
+  if(form){ form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const name  = document.getElementById('f-name').value.trim();
+    const email = document.getElementById('f-email').value.trim();
+    if(!name || !email){
+      Portal.toast('נא למלא שם ואימייל 🦥');
+      (!name ? document.getElementById('f-name') : document.getElementById('f-email')).focus();
+      return;
+    }
+    document.getElementById('co-grid').style.display = 'none';
+    const ok = document.getElementById('co-success');
+    ok.classList.add('show');
+    ok.scrollIntoView({behavior:'smooth',block:'center'});
+    Portal.toast('התשלום בוצע, המסלול נפתח 🦥');
+  }); }
+})();
+</script>
+</body>
+</html>

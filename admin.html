@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>השקעות לעצלנים · פאנל ניהול</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<link href="assets/brand.css" rel="stylesheet">
+<style>
+  .block{padding:28px 0}
+  .head .sub{color:var(--muted);font-size:14px;font-weight:500;margin-top:2px}
+
+  /* section show/hide */
+  .view{display:none}
+  .view.active{display:block;animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  /* KPI grid */
+  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+  .kpi{padding:20px;display:flex;flex-direction:column;gap:8px}
+  .kpi .ico{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-size:22px;background:var(--green-soft)}
+  .kpi .ico.y{background:var(--yellow-soft)}
+  .kpi .ico.o{background:#ffeede}
+  .kpi .ico.r{background:#fbe3e3}
+  .kpi .label{color:var(--muted);font-size:13px;font-weight:600}
+  .kpi .num{font-size:30px;font-weight:900;line-height:1;color:var(--ink)}
+  .kpi .trend{font-size:12.5px;font-weight:800;display:inline-flex;align-items:center;gap:3px;align-self:flex-start;padding:2px 9px;border-radius:20px}
+  .kpi .trend.up{color:var(--green-deep);background:var(--green-soft)}
+  .kpi .trend.down{color:var(--red);background:#fbe3e3}
+  @media(max-width:980px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.kpis{grid-template-columns:1fr}}
+
+  /* chart */
+  .chart-wrap{padding:24px}
+  .chart{display:flex;align-items:flex-end;gap:14px;height:230px;padding-top:10px}
+  .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:9px;height:100%}
+  .col .barfill{width:100%;max-width:54px;background:linear-gradient(180deg,var(--green),var(--green-deep));border-radius:10px 10px 4px 4px;position:relative;transition:height .9s cubic-bezier(.2,.8,.2,1);margin-top:auto}
+  .col .barfill::after{content:attr(data-v);position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:800;color:var(--green-deep);white-space:nowrap}
+  .col .barfill.peak{background:linear-gradient(180deg,var(--yellow),var(--orange))}
+  .col .barfill.peak::after{color:var(--orange)}
+  .col .mlabel{font-size:13px;font-weight:700;color:var(--muted)}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:6px;color:var(--muted);font-size:13px;font-weight:600}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .dot{width:12px;height:12px;border-radius:4px}
+
+  /* two col */
+  .two{display:grid;grid-template-columns:1.5fr 1fr;gap:20px}
+  @media(max-width:900px){.two{grid-template-columns:1fr}}
+
+  /* toolbar */
+  .toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+  .toolbar input,.toolbar select{font-family:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:11px 14px;color:var(--ink);outline:none}
+  .toolbar input{flex:1;min-width:180px}
+  .toolbar input:focus,.toolbar select:focus{border-color:var(--green)}
+  .toolbar .spacer{flex:1}
+
+  /* table */
+  .table-scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;min-width:640px}
+  th,td{text-align:right;padding:14px 16px;border-bottom:1px solid var(--line);font-size:14.5px}
+  th{color:var(--muted);font-weight:700;font-size:13px;background:var(--green-soft);position:sticky;top:0}
+  tbody tr:hover{background:var(--bg)}
+  td .name{display:flex;align-items:center;gap:10px;font-weight:700}
+  td .ava{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--green-deep));color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;flex:none}
+  .minibar{width:120px}
+  .tag.paid{background:var(--green-soft);color:var(--green-deep)}
+  .tag.wait{background:var(--yellow-soft);color:#a8780a}
+  .tag.cancel{background:#fbe3e3;color:var(--red)}
+
+  /* content modules */
+  .mod{display:flex;align-items:center;gap:16px;padding:16px 20px;border-bottom:1px solid var(--line)}
+  .mod:last-child{border-bottom:0}
+  .mod .n{width:38px;height:38px;border-radius:11px;background:var(--green-soft);color:var(--green-deep);font-weight:900;display:grid;place-items:center;flex:none}
+  .mod .info{flex:1;min-width:0}
+  .mod .info b{font-weight:700;display:block}
+  .mod .info small{color:var(--muted);font-size:12.5px}
+  .mod .comp{width:130px;flex:none}
+  .mod .comp small{font-size:12px;color:var(--muted);font-weight:600}
+  @media(max-width:640px){.mod .comp{display:none}}
+
+  /* toggle switch */
+  .sw{position:relative;width:46px;height:26px;flex:none;cursor:pointer}
+  .sw input{opacity:0;width:0;height:0;position:absolute}
+  .sw .track{position:absolute;inset:0;background:#d4ded8;border-radius:30px;transition:.25s}
+  .sw .track::before{content:"";position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;right:3px;transition:.25s;box-shadow:0 2px 5px rgba(0,0,0,.18)}
+  .sw input:checked + .track{background:var(--green)}
+  .sw input:checked + .track::before{transform:translateX(-20px)}
+
+  /* automations */
+  .auto-panel .head-strip{padding:20px 22px;background:linear-gradient(135deg,var(--green-deep),var(--green));color:#fff}
+  .auto-panel .head-strip h3{font-size:19px;font-weight:900;display:flex;align-items:center;gap:9px}
+  .auto-panel .head-strip p{font-size:13.5px;opacity:.92;margin-top:4px}
+  .auto-row{display:flex;align-items:center;gap:14px;padding:16px 22px;border-bottom:1px solid var(--line)}
+  .auto-row:last-child{border-bottom:0}
+  .auto-row .ai{width:40px;height:40px;border-radius:12px;background:var(--yellow-soft);display:grid;place-items:center;font-size:20px;flex:none}
+  .auto-row .ad{flex:1}
+  .auto-row .ad b{font-weight:700;display:block}
+  .auto-row .ad small{color:var(--muted);font-size:12.5px}
+  .auto-foot{padding:14px 22px;background:var(--green-soft);color:var(--green-deep);font-size:13px;font-weight:700;text-align:center}
+
+  /* funnel */
+  .funnel{display:flex;flex-direction:column;gap:10px;padding:24px}
+  .fstep{position:relative}
+  .fbar{background:linear-gradient(90deg,var(--green-deep),var(--green));color:#fff;border-radius:12px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin:0 auto;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+  .fbar b{font-weight:800;font-size:16px}
+  .fbar .cnt{font-weight:900;font-size:18px}
+  .fstep:nth-child(2) .fbar{background:linear-gradient(90deg,var(--green),#2bb56a)}
+  .fstep:nth-child(3) .fbar{background:linear-gradient(90deg,#2bb56a,#4cc77f)}
+  .fstep:nth-child(4) .fbar{background:linear-gradient(90deg,var(--orange),var(--yellow))}
+  .fstep:nth-child(4) .fbar b,.fstep:nth-child(4) .fbar .cnt{color:#5a4500}
+  .conv{text-align:center;font-size:12.5px;font-weight:800;color:var(--muted);margin:2px 0}
+  .conv b{color:var(--green-deep)}
+
+  /* sources */
+  .src{padding:6px 22px 22px}
+  .src-row{display:flex;align-items:center;gap:12px;padding:10px 0}
+  .src-row .lbl{width:90px;font-weight:700;font-size:14px;flex:none}
+  .src-row .track{flex:1;height:12px;background:var(--line);border-radius:8px;overflow:hidden}
+  .src-row .track i{display:block;height:100%;border-radius:8px}
+  .src-row .pct{width:42px;text-align:left;font-weight:800;font-size:13px;color:var(--muted);flex:none}
+</style>
+</head>
+<body>
+
+<div class="demo-flag">🦥 דמו פורטל · <b>השקעות לעצלנים</b> · דשבורד ניהול (מבט הבעלים)</div>
+
+<header class="topbar"><div class="wrap">
+  <div class="brand"><span class="sloth">🦥</span> השקעות לעצלנים <span style="font-size:12px;font-weight:700;color:var(--muted);background:var(--green-soft);padding:3px 10px;border-radius:20px;margin-right:6px">ניהול</span></div>
+  <nav class="nav">
+    <a href="#overview" class="active" data-tab="overview">סקירה</a>
+    <a href="#members" data-tab="members">חברים</a>
+    <a href="#content" data-tab="content">תוכן</a>
+    <a href="#funnel" data-tab="funnel">משפך מכירות</a>
+  </nav>
+  <div class="me"><div style="text-align:left"><div style="font-weight:700;line-height:1.1">תמיר</div><small>בעלים</small></div><div class="avatar">ת</div></div>
+</div></header>
+
+<div class="wrap">
+
+<!-- ===================== סקירה ===================== -->
+<section class="view active block" id="overview">
+  <div class="head">
+    <div>
+      <h2>שלום תמיר <em>👋</em></h2>
+      <div class="sub">תמונת מצב של העסק · הנתונים מתעדכנים לבד, אתה רק צופה</div>
+    </div>
+  </div>
+
+  <div class="kpis">
+    <div class="panel kpi">
+      <div class="ico">👥</div>
+      <div class="label">חברים פעילים</div>
+      <div class="num">2,340</div>
+      <span class="trend up">▲ 6.2%</span>
+    </div>
+    <div class="panel kpi">
+      <div class="ico y">💰</div>
+      <div class="label">הכנסה החודש</div>
+      <div class="num">₪148,200</div>
+      <span class="trend up">▲ 11.4%</span>
+    </div>
+    <div class="panel kpi">
+      <div class="ico o">📈</div>
+      <div class="label">השלמת קורס ממוצעת</div>
+      <div class="num">61%</div>
+      <span class="trend up">▲ 3.1%</span>
+    </div>
+    <div class="panel kpi">
+      <div class="ico">✨</div>
+      <div class="label">מנויים חדשים החודש</div>
+      <div class="num">+128</div>
+      <span class="trend up">▲ 9.0%</span>
+    </div>
+    <div class="panel kpi">
+      <div class="ico r">↩️</div>
+      <div class="label">נטישה (Churn)</div>
+      <div class="num">1.4%</div>
+      <span class="trend down">▼ 0.3%</span>
+    </div>
+  </div>
+
+  <div class="head" style="margin-top:30px">
+    <div><h2>הכנסה <em>6 חודשים אחרונים</em></h2><div class="sub">מגמת צמיחה יציבה, אפס מגע ידני</div></div>
+  </div>
+  <div class="panel chart-wrap">
+    <div class="chart" id="revChart">
+      <div class="col"><div class="barfill" data-v="₪92K" style="height:0" data-h="60%"></div><div class="mlabel">ינואר</div></div>
+      <div class="col"><div class="barfill" data-v="₪101K" style="height:0" data-h="66%"></div><div class="mlabel">פברואר</div></div>
+      <div class="col"><div class="barfill" data-v="₪118K" style="height:0" data-h="77%"></div><div class="mlabel">מרץ</div></div>
+      <div class="col"><div class="barfill" data-v="₪127K" style="height:0" data-h="83%"></div><div class="mlabel">אפריל</div></div>
+      <div class="col"><div class="barfill" data-v="₪134K" style="height:0" data-h="88%"></div><div class="mlabel">מאי</div></div>
+      <div class="col"><div class="barfill peak" data-v="₪148K" style="height:0" data-h="97%"></div><div class="mlabel">יוני</div></div>
+    </div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--green-deep)"></i> הכנסה חודשית</span>
+      <span><i class="dot" style="background:var(--orange)"></i> חודש שיא</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== חברים ===================== -->
+<section class="view block" id="members">
+  <div class="head">
+    <div><h2>חברים <em>2,340</em></h2><div class="sub">כל מי שנרשם לפורטל, עם השלב והסטטוס שלו</div></div>
+    <a href="#" id="exportBtn" class="btn btn-ghost" style="padding:9px 16px">📥 ייצא לאקסל</a>
+  </div>
+
+  <div class="toolbar">
+    <input type="text" id="memSearch" placeholder="🔍 חיפוש לפי שם...">
+    <select id="memFilter">
+      <option value="all">כל הסטטוסים</option>
+      <option value="paid">פעיל</option>
+      <option value="wait">ממתין תשלום</option>
+      <option value="cancel">בוטל</option>
+    </select>
+  </div>
+
+  <div class="panel table-scroll">
+    <table id="memTable">
+      <thead>
+        <tr><th>שם</th><th>הצטרף</th><th>שלב נוכחי</th><th>התקדמות</th><th>סטטוס מנוי</th></tr>
+      </thead>
+      <tbody>
+        <tr data-name="נועה לוי" data-status="paid"><td><div class="name"><span class="ava">נל</span> נועה לוי</div></td><td>04/01/26</td><td>שלב 5 · פיזור תיק</td><td><div class="bar minibar"><i style="width:72%"></i></div></td><td><span class="tag paid">פעיל</span></td></tr>
+        <tr data-name="איתי כהן" data-status="paid"><td><div class="name"><span class="ava">אכ</span> איתי כהן</div></td><td>22/12/25</td><td>שלב 8 · איזון מחדש</td><td><div class="bar minibar"><i style="width:94%"></i></div></td><td><span class="tag paid">פעיל</span></td></tr>
+        <tr data-name="שירה מזרחי" data-status="wait"><td><div class="name"><span class="ava">שמ</span> שירה מזרחי</div></td><td>11/02/26</td><td>שלב 2 · קרנות מחקות</td><td><div class="bar minibar"><i style="width:28%"></i></div></td><td><span class="tag wait">ממתין תשלום</span></td></tr>
+        <tr data-name="דוד פרץ" data-status="paid"><td><div class="name"><span class="ava">דפ</span> דוד פרץ</div></td><td>30/11/25</td><td>שלב 6 · מיסוי</td><td><div class="bar minibar"><i style="width:80%"></i></div></td><td><span class="tag paid">פעיל</span></td></tr>
+        <tr data-name="מאיה ביטון" data-status="paid"><td><div class="name"><span class="ava">מב</span> מאיה ביטון</div></td><td>17/01/26</td><td>שלב 3 · דמי ניהול</td><td><div class="bar minibar"><i style="width:42%"></i></div></td><td><span class="tag paid">פעיל</span></td></tr>
+        <tr data-name="יוסי אברהם" data-status="cancel"><td><div class="name"><span class="ava">יא</span> יוסי אברהם</div></td><td>05/10/25</td><td>שלב 1 · מבוא</td><td><div class="bar minibar"><i style="width:12%"></i></div></td><td><span class="tag cancel">בוטל</span></td></tr>
+        <tr data-name="טל גולן" data-status="paid"><td><div class="name"><span class="ava">טג</span> טל גולן</div></td><td>28/01/26</td><td>שלב 7 · משיכה חכמה</td><td><div class="bar minibar"><i style="width:88%"></i></div></td><td><span class="tag paid">פעיל</span></td></tr>
+        <tr data-name="רוני שמש" data-status="wait"><td><div class="name"><span class="ava">רש</span> רוני שמש</div></td><td>14/02/26</td><td>שלב 1 · מבוא</td><td><div class="bar minibar"><i style="width:8%"></i></div></td><td><span class="tag wait">ממתין תשלום</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===================== תוכן ===================== -->
+<section class="view block" id="content">
+  <div class="head">
+    <div><h2>תוכן הקורס <em>8 שלבים</em></h2><div class="sub">צפיות, אחוז השלמה וסטטוס פרסום לכל שלב</div></div>
+  </div>
+
+  <div class="two">
+    <div class="panel" id="modList">
+      <div class="mod"><div class="n">1</div><div class="info"><b>מבוא: למה השקעה פסיבית</b><small>2,310 צפיות</small></div><div class="comp"><div class="bar"><i style="width:88%"></i></div><small>88% השלמה</small></div><label class="sw"><input type="checkbox" checked data-mod="מבוא"><span class="track"></span></label></div>
+      <div class="mod"><div class="n">2</div><div class="info"><b>קרנות מחקות מדד</b><small>2,040 צפיות</small></div><div class="comp"><div class="bar"><i style="width:74%"></i></div><small>74% השלמה</small></div><label class="sw"><input type="checkbox" checked data-mod="קרנות מחקות"><span class="track"></span></label></div>
+      <div class="mod"><div class="n">3</div><div class="info"><b>דמי ניהול והעלות הסמויה</b><small>1,880 צפיות</small></div><div class="comp"><div class="bar"><i style="width:69%"></i></div><small>69% השלמה</small></div><label class="sw"><input type="checkbox" checked data-mod="דמי ניהול"><span class="track"></span></label></div>
+      <div class="mod"><div class="n">4</div><div class="info"><b>בניית תיק עצלן</b><small>1,650 צפיות</small></div><div class="comp"><div class="bar"><i style="width:61%"></i></div><small>61% השלמה</small></div><label class="sw"><input type="checkbox" checked data-mod="תיק עצלן"><span class="track"></span></label></div>
+      <div class="mod"><div class="n">5</div><div class="info"><b>פיזור נכון</b><small>1,420 צפיות</small></div><div class="comp"><div class="bar"><i style="width:54%"></i></div><small>54% השלמה</small></div><label class="sw"><input type="checkbox" checked data-mod="פיזור"><span class="track"></span></label></div>
+      <div class="mod"><div class="n">6</div><div class="info"><b>מיסוי למשקיע העצלן</b><small>1,190 צפיות</small></div><div class="comp"><div class="bar"><i style="width:47%"></i></div><small>47% השלמה</small></div><label class="sw"><input type="checkbox" checked data-mod="מיסוי"><span class="track"></span></label></div>
+      <div class="mod"><div class="n">7</div><div class="info"><b>משיכה חכמה בפנסיה</b><small>980 צפיות</small></div><div class="comp"><div class="bar"><i style="width:38%"></i></div><small>38% השלמה</small></div><label class="sw"><input type="checkbox" checked data-mod="משיכה"><span class="track"></span></label></div>
+      <div class="mod"><div class="n">8</div><div class="info"><b>איזון מחדש שנתי</b><small>640 צפיות</small></div><div class="comp"><div class="bar"><i style="width:24%"></i></div><small>טיוטה</small></div><label class="sw"><input type="checkbox" data-mod="איזון מחדש"><span class="track"></span></label></div>
+    </div>
+
+    <div class="panel auto-panel">
+      <div class="head-strip">
+        <h3>🤖 מנוע אפס מגע אנושי</h3>
+        <p>המערכת מדברת עם החברים לבד. אתה רק מדליק ומכבה.</p>
+      </div>
+      <div class="auto-row"><div class="ai">👋</div><div class="ad"><b>הודעת ברוך הבא אוטומטית</b><small>נשלחת מיד עם ההרשמה</small></div><label class="sw"><input type="checkbox" checked data-auto="ברוך הבא"><span class="track"></span></label></div>
+      <div class="auto-row"><div class="ai">📚</div><div class="ad"><b>תזכורת שיעורי בית</b><small>אם לא נכנס 3 ימים</small></div><label class="sw"><input type="checkbox" checked data-auto="תזכורת"><span class="track"></span></label></div>
+      <div class="auto-row"><div class="ai">⬆️</div><div class="ad"><b>הצעת שדרוג אחרי שלב 4</b><small>אוטומטית בסיום השלב</small></div><label class="sw"><input type="checkbox" checked data-auto="שדרוג"><span class="track"></span></label></div>
+      <div class="auto-row"><div class="ai">🎥</div><div class="ad"><b>וובינר שבועי אוטומטי</b><small>הזמנה + תזכורת בלי ידיים</small></div><label class="sw"><input type="checkbox" checked data-auto="וובינר"><span class="track"></span></label></div>
+      <div class="auto-row"><div class="ai">💌</div><div class="ad"><b>מייל "התגעגענו" לנוטשים</b><small>אם לא נכנס 14 יום</small></div><label class="sw"><input type="checkbox" data-auto="התגעגענו"><span class="track"></span></label></div>
+      <div class="auto-foot">⚡ 4 מתוך 5 אוטומציות פעילות · חוסכות כ-22 שעות עבודה בשבוע</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== משפך מכירות ===================== -->
+<section class="view block" id="funnel">
+  <div class="head">
+    <div><h2>משפך מכירות <em>החודש</em></h2><div class="sub">מהביקור הראשון ועד הרכישה, הכל נמדד אוטומטית</div></div>
+  </div>
+
+  <div class="two">
+    <div class="panel">
+      <div class="funnel">
+        <div class="fstep"><div class="fbar" style="width:100%"><b>ביקרו בפורטל</b><span class="cnt">14,200</span></div></div>
+        <div class="conv">↓ <b>32%</b> המשיכו</div>
+        <div class="fstep"><div class="fbar" style="width:74%"><b>נרשמו לשיחת התאמה</b><span class="cnt">4,540</span></div></div>
+        <div class="conv">↓ <b>61%</b> המשיכו</div>
+        <div class="fstep"><div class="fbar" style="width:52%"><b>צפו בשלב 1</b><span class="cnt">2,770</span></div></div>
+        <div class="conv">↓ <b>17%</b> המשיכו</div>
+        <div class="fstep"><div class="fbar" style="width:30%"><b>רכשו מסלול מלא</b><span class="cnt">472</span></div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="head-strip" style="padding:20px 22px;background:linear-gradient(135deg,var(--green-deep),var(--green));color:#fff;border-radius:0">
+        <h3 style="font-size:18px;font-weight:900">📊 מקורות תנועה</h3>
+        <p style="font-size:13px;opacity:.9;margin-top:4px">מאיפה מגיעים החברים</p>
+      </div>
+      <div class="src">
+        <div class="src-row"><span class="lbl">אינסטגרם</span><div class="track"><i style="width:46%;background:var(--green)"></i></div><span class="pct">46%</span></div>
+        <div class="src-row"><span class="lbl">פודקאסט</span><div class="track"><i style="width:27%;background:var(--green-deep)"></i></div><span class="pct">27%</span></div>
+        <div class="src-row"><span class="lbl">אורגני</span><div class="track"><i style="width:18%;background:var(--orange)"></i></div><span class="pct">18%</span></div>
+        <div class="src-row"><span class="lbl">המלצות</span><div class="track"><i style="width:9%;background:var(--yellow)"></i></div><span class="pct">9%</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<footer><div class="wrap"><div>© השקעות לעצלנים · פאנל ניהול 🦥</div><div class="credit">נבנה ע"י הלל</div></div></footer>
+
+<script src="assets/portal.js"></script>
+<script>
+(function(){
+  /* ---- tab switching ---- */
+  const tabs = document.querySelectorAll('.nav a[data-tab]');
+  const views = document.querySelectorAll('.view');
+  function show(id){
+    views.forEach(v=>v.classList.toggle('active', v.id===id));
+    tabs.forEach(t=>t.classList.toggle('active', t.dataset.tab===id));
+    if(id==='overview') animateChart();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  tabs.forEach(t=>t.addEventListener('click',e=>{ e.preventDefault(); show(t.dataset.tab); }));
+  // deep-link support
+  if(location.hash){ const id=location.hash.slice(1); if(document.getElementById(id)) show(id); }
+
+  /* ---- revenue chart animation ---- */
+  let charted=false;
+  function animateChart(){
+    document.querySelectorAll('#revChart .barfill').forEach((b,i)=>{
+      setTimeout(()=>{ b.style.height=b.dataset.h; }, charted?0:90*i);
+    });
+    charted=true;
+  }
+  animateChart();
+
+  /* ---- export ---- */
+  document.getElementById('exportBtn').addEventListener('click',e=>{
+    e.preventDefault(); Portal.toast('הקובץ יוצא 📥');
+  });
+
+  /* ---- members search + filter ---- */
+  const search=document.getElementById('memSearch');
+  const filter=document.getElementById('memFilter');
+  const rows=[...document.querySelectorAll('#memTable tbody tr')];
+  function applyFilter(){
+    const q=(search.value||'').trim();
+    const f=filter.value;
+    rows.forEach(r=>{
+      const okName = !q || r.dataset.name.includes(q);
+      const okStatus = f==='all' || r.dataset.status===f;
+      r.style.display = (okName && okStatus) ? '' : 'none';
+    });
+  }
+  search.addEventListener('input',applyFilter);
+  filter.addEventListener('change',applyFilter);
+
+  /* ---- content publish toggles ---- */
+  document.querySelectorAll('input[data-mod]').forEach(cb=>{
+    cb.addEventListener('change',()=>{
+      Portal.toast(cb.checked ? 'השלב פורסם ✓' : 'השלב הועבר לטיוטה');
+    });
+  });
+
+  /* ---- automation toggles ---- */
+  document.querySelectorAll('input[data-auto]').forEach(cb=>{
+    cb.addEventListener('change',()=>{
+      Portal.toast(cb.checked ? 'האוטומציה הופעלה ✓' : 'האוטומציה כובתה');
+    });
+  });
+})();
+</script>
+</body>
+</html>

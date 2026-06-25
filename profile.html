@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>הפרופיל שלי · השקעות לעצלנים 🦥</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<link href="assets/brand.css" rel="stylesheet">
+<style>
+  /* ===== profile page only ===== */
+  .profile-hero{display:flex;align-items:center;gap:24px;padding:30px;flex-wrap:wrap}
+  .profile-hero .big-avatar{width:96px;height:96px;border-radius:28px;background:linear-gradient(135deg,var(--green),var(--green-deep));display:grid;place-items:center;color:#fff;font-weight:900;font-size:44px;box-shadow:var(--shadow);flex-shrink:0}
+  .profile-hero .info{flex:1;min-width:200px}
+  .profile-hero .info h1{font-size:28px;font-weight:900;line-height:1.1}
+  .profile-hero .info .sub{color:var(--muted);font-weight:500;margin-top:4px}
+  .result-badge{display:inline-flex;align-items:center;gap:8px;background:var(--yellow-soft);color:#a8780a;font-weight:800;font-size:14px;padding:7px 14px;border-radius:30px;margin-top:12px}
+  .profile-hero .actions{flex-shrink:0}
+
+  .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:20px;text-align:center;transition:transform .15s,box-shadow .15s}
+  .stat:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+  .stat .ic{font-size:28px;line-height:1}
+  .stat .num{font-size:30px;font-weight:900;color:var(--green-deep);margin-top:6px;line-height:1}
+  .stat .lbl{color:var(--muted);font-weight:600;font-size:14px;margin-top:6px}
+
+  /* journey timeline */
+  .journey{display:flex;flex-direction:column;gap:0}
+  .j-item{display:flex;gap:16px;padding:18px 24px;border-bottom:1px solid var(--line);position:relative}
+  .j-item:last-child{border-bottom:0}
+  .j-dot{flex-shrink:0;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:15px}
+  .j-dot.done{background:var(--green-soft);color:var(--green-deep)}
+  .j-dot.now{background:var(--yellow);color:#5a4500}
+  .j-dot.lock{background:#f0f2f1;color:var(--muted)}
+  .j-body{flex:1;min-width:0}
+  .j-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .j-title{font-weight:800;font-size:16px}
+  .j-title.lock{color:var(--muted)}
+  .j-meta{color:var(--muted);font-size:13px;margin:2px 0 8px}
+  .j-bar{max-width:340px}
+
+  /* badges */
+  .badges{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px}
+  .badge{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:20px 12px;border:1px solid var(--line);border-radius:18px;background:var(--green-soft)}
+  .badge.locked{background:#f6f7f6;opacity:.6;filter:grayscale(1)}
+  .badge .be{font-size:38px;line-height:1}
+  .badge .bt{font-weight:800;font-size:14px;color:var(--ink)}
+  .badge .bd{font-size:12px;color:var(--muted)}
+
+  /* notes */
+  .notes-wrap{padding:24px}
+  .note{background:var(--green-soft);border-right:4px solid var(--green);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+  .note .ntag{font-weight:800;font-size:12px;color:var(--green-deep);margin-bottom:4px}
+  .note .ntxt{font-size:15px}
+  .note-form{margin-top:18px}
+  .note-form textarea{width:100%;border:1px solid var(--line);border-radius:14px;padding:14px;font-family:inherit;font-size:15px;resize:vertical;min-height:90px;color:var(--ink);background:#fbfdfb}
+  .note-form textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+  .note-form .row{display:flex;justify-content:flex-end;margin-top:12px}
+
+  @media(max-width:720px){
+    .stats-grid{grid-template-columns:repeat(2,1fr)}
+    .badges{grid-template-columns:repeat(2,1fr)}
+    .profile-hero{justify-content:center;text-align:center}
+    .profile-hero .info{text-align:center}
+    .profile-hero .actions{width:100%}
+    .profile-hero .actions .btn{width:100%;justify-content:center}
+  }
+  @media(max-width:440px){
+    .stats-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<div class="demo-flag">🦥 דמו פורטל · <b>השקעות לעצלנים</b> · הפרופיל שלי</div>
+
+<header class="topbar"><div class="wrap">
+  <div class="brand"><span class="sloth">🦥</span> השקעות לעצלנים</div>
+  <nav class="nav">
+    <a href="index.html">הבית שלי</a>
+    <a href="lesson.html">הקורס</a>
+    <a href="game.html">משחק תרגול</a>
+    <a href="community.html">הקהילה</a>
+    <a href="calculator.html">מחשבונים</a>
+  </nav>
+  <div class="me"><a href="admin.html" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);font-weight:600" title="מבט הבעלים">⚙️ ניהול</a><a href="profile.html" style="display:flex;align-items:center;gap:10px"><div style="text-align:left"><div style="font-weight:700;line-height:1.1">דנה</div><small>חברה מאז 2026</small></div><div class="avatar">ד</div></a></div>
+</div></header>
+
+<main class="wrap">
+
+  <!-- profile header -->
+  <section class="block">
+    <div class="panel">
+      <div class="profile-hero">
+        <div class="big-avatar">ד</div>
+        <div class="info">
+          <h1>דנה לוי</h1>
+          <div class="sub">חברה מאז מרץ 2026 · במסע אל השקעה פסיבית רגועה</div>
+          <span class="result-badge">🦥 העצלן המושלם · סוג המשקיע שלך</span>
+        </div>
+        <div class="actions">
+          <button class="btn btn-ghost" id="editBtn">✏️ ערוך פרופיל</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- stats -->
+  <section class="block">
+    <div class="head"><h2>המספרים <em>שלי</em></h2></div>
+    <div class="stats-grid">
+      <div class="stat"><div class="ic">🔥</div><div class="num">9</div><div class="lbl">ימי רצף למידה</div></div>
+      <div class="stat"><div class="ic">⭐</div><div class="num">1,490</div><div class="lbl">XP שנצברו</div></div>
+      <div class="stat"><div class="ic">📚</div><div class="num">14/25</div><div class="lbl">פרקים שהושלמו</div></div>
+      <div class="stat"><div class="ic">✅</div><div class="num">5</div><div class="lbl">שיעורי בית שאושרו</div></div>
+      <div class="stat"><div class="ic">🏆</div><div class="num">#3</div><div class="lbl">דירוג בקהילה</div></div>
+      <div class="stat"><div class="ic">📅</div><div class="num">23</div><div class="lbl">ימים פעילים</div></div>
+    </div>
+  </section>
+
+  <!-- journey -->
+  <section class="block">
+    <div class="head"><h2>המסע <em>שלי</em></h2><a href="lesson.html">להמשיך ללמוד ←</a></div>
+    <div class="panel">
+      <div class="journey" id="journey"></div>
+    </div>
+  </section>
+
+  <!-- badges -->
+  <section class="block">
+    <div class="head"><h2>ההישגים <em>שלי</em></h2></div>
+    <div class="panel">
+      <div class="badges">
+        <div class="badge"><span class="be">🌱</span><span class="bt">התחלתי</span><span class="bd">הצטרפת למסע</span></div>
+        <div class="badge"><span class="be">🔥</span><span class="bt">רצף 7 ימים</span><span class="bd">שבוע ברצף</span></div>
+        <div class="badge"><span class="be">🎯</span><span class="bt">סיימתי שלב</span><span class="bd">3 שלבים הושלמו</span></div>
+        <div class="badge"><span class="be">💬</span><span class="bt">פעיל בקהילה</span><span class="bd">השתתפת בדיון</span></div>
+        <div class="badge locked"><span class="be">🏅</span><span class="bt">חצי הדרך</span><span class="bd">סיים 4 שלבים</span></div>
+        <div class="badge locked"><span class="be">👑</span><span class="bt">סיימתי הכל</span><span class="bd">כל 8 השלבים</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- notes -->
+  <section class="block">
+    <div class="head"><h2>ההערות <em>שלי</em></h2></div>
+    <div class="panel">
+      <div class="notes-wrap">
+        <div id="notesList">
+          <div class="note"><div class="ntag">שלב 3 · אסטרטגיה</div><div class="ntxt">לזכור: S&amp;P או עולם, שניהם טובים. לא להתלבט יותר מדי, לבחור ולהמשיך.</div></div>
+          <div class="note"><div class="ntag">שלב 4 · הרכבת התיק</div><div class="ntxt">לבדוק כמה אג"ח מתאים לי לפי הגיל. הפקדה חודשית קבועה ולא לגעת.</div></div>
+          <div class="note"><div class="ntag">תזכורת אישית</div><div class="ntxt">משעמם זה טוב, עקבי מנצח 🦥 לבדוק את התיק פעם בחודש, לא כל יום.</div></div>
+        </div>
+        <div class="note-form">
+          <textarea id="noteInput" placeholder="כתוב כאן הערה אישית מהשיעור..."></textarea>
+          <div class="row"><button class="btn btn-green" id="saveNote">💾 שמור הערה</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer><div class="wrap"><div>© השקעות לעצלנים · הדרך הקלה להשקעות פסיביות 🦥</div><div class="credit">נבנה ע"י הלל</div></div></footer>
+
+<script src="data/content.js"></script>
+<script src="assets/portal.js"></script>
+<script>
+  /* ---- render journey from LAZY.modules ---- */
+  (function(){
+    var stateMeta = {
+      done:{ tag:'הושלם', icon:'✓', pct:100 },
+      now: { tag:'בתהליך', icon:'➜', pct:40 },
+      lock:{ tag:'נעול',  icon:'🔒', pct:0 }
+    };
+    var html = (window.LAZY && LAZY.modules ? LAZY.modules : []).map(function(m){
+      var meta = stateMeta[m.state] || stateMeta.lock;
+      var dotLabel = m.state==='lock' ? meta.icon : (m.state==='done' ? meta.icon : m.n);
+      return ''+
+        '<div class="j-item">'+
+          '<div class="j-dot '+m.state+'">'+dotLabel+'</div>'+
+          '<div class="j-body">'+
+            '<div class="j-top">'+
+              '<span class="j-title '+(m.state==='lock'?'lock':'')+'">שלב '+m.n+' · '+m.title+'</span>'+
+              '<span class="tag '+m.state+'">'+meta.tag+'</span>'+
+            '</div>'+
+            '<div class="j-meta">'+m.chapters.length+' פרקים · '+m.mins+' דקות</div>'+
+            '<div class="bar j-bar"><i style="width:'+meta.pct+'%"></i></div>'+
+          '</div>'+
+        '</div>';
+    }).join('');
+    var el = document.getElementById('journey');
+    if(el) el.innerHTML = html;
+  })();
+
+  /* ---- edit profile (cosmetic) ---- */
+  document.getElementById('editBtn').addEventListener('click', function(){
+    Portal.toast('שמור ✓');
+  });
+
+  /* ---- save note (appends client-side) ---- */
+  document.getElementById('saveNote').addEventListener('click', function(){
+    var input = document.getElementById('noteInput');
+    var txt = (input.value || '').trim();
+    if(!txt){ Portal.toast('כתוב משהו קודם 🦥'); return; }
+    var note = document.createElement('div');
+    note.className = 'note';
+    var tag = document.createElement('div'); tag.className='ntag'; tag.textContent='הערה חדשה';
+    var body = document.createElement('div'); body.className='ntxt'; body.textContent=txt;
+    note.appendChild(tag); note.appendChild(body);
+    var list = document.getElementById('notesList');
+    list.insertBefore(note, list.firstChild);
+    input.value = '';
+    Portal.toast('ההערה נשמרה 🦥');
+  });
+</script>
+</body>
+</html>

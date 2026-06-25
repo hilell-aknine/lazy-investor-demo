@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>השקעות לעצלנים · הקהילה</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<link href="assets/brand.css" rel="stylesheet">
+<style>
+  /* community-specific */
+  .community{display:grid;grid-template-columns:1.6fr 1fr;gap:24px;padding:28px 0 10px;align-items:start}
+  @media(max-width:860px){.community{grid-template-columns:1fr}}
+
+  /* category chips */
+  .chips{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:18px}
+  .chip{border:1px solid var(--line);background:var(--card);color:var(--muted);font-family:inherit;font-weight:700;font-size:14px;padding:8px 16px;border-radius:30px;cursor:pointer;transition:all .15s}
+  .chip:hover{border-color:var(--green);color:var(--green-deep)}
+  .chip.active{background:var(--green-deep);color:#fff;border-color:var(--green-deep);box-shadow:0 6px 16px rgba(15,122,64,.22)}
+
+  /* composer */
+  .composer{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:20px}
+  .composer .row{display:flex;gap:12px;align-items:flex-start}
+  .composer textarea{flex:1;border:1px solid var(--line);border-radius:14px;background:var(--bg);font-family:inherit;font-size:15px;color:var(--ink);padding:12px 14px;resize:vertical;min-height:54px;line-height:1.5}
+  .composer textarea:focus{outline:none;border-color:var(--green);background:var(--card)}
+  .composer .foot{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+  .composer .foot small{color:var(--muted);font-size:13px}
+
+  /* feed */
+  .feed{display:flex;flex-direction:column;gap:16px}
+  .post{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;transition:box-shadow .18s}
+  .post:hover{box-shadow:var(--shadow-lg)}
+  .post.pinned{border-color:var(--yellow);background:linear-gradient(180deg,var(--yellow-soft) 0%,var(--card) 60px)}
+  .post-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .post-head .avatar{flex:none}
+  .post-who b{font-weight:800;font-size:15px;display:inline-flex;align-items:center;gap:6px}
+  .post-who small{color:var(--muted);font-size:13px;display:block}
+  .verified{background:var(--green);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:3px}
+  .pin-badge{margin-right:auto;font-size:13px;color:#a8780a;font-weight:700;background:var(--yellow-soft);padding:4px 10px;border-radius:20px}
+  .post-body{font-size:15px;line-height:1.65;color:var(--ink);white-space:pre-wrap}
+  .post-cat{margin-top:12px}
+  .post-actions{display:flex;gap:8px;align-items:center;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+  .act{border:1px solid var(--line);background:var(--card);color:var(--muted);font-family:inherit;font-weight:700;font-size:14px;padding:7px 14px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:all .15s}
+  .act:hover{border-color:var(--green);color:var(--green-deep)}
+  .act.liked{background:var(--green-soft);border-color:var(--green);color:var(--green-deep)}
+
+  /* comments */
+  .comments{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+  .comment{display:flex;gap:10px;background:var(--bg);border-radius:14px;padding:11px 13px}
+  .comment .ca{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px;flex:none}
+  .comment .ctext b{font-weight:800;font-size:13.5px}
+  .comment .ctext span{display:block;font-size:14px;color:var(--ink);line-height:1.5;margin-top:2px}
+
+  /* sidebar */
+  .side{display:flex;flex-direction:column;gap:16px;position:sticky;top:84px}
+  @media(max-width:860px){.side{position:static}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+  .card h3{font-size:16px;font-weight:900;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .rules li{list-style:none;display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--ink);margin-bottom:10px;line-height:1.45}
+  .rules li:last-child{margin-bottom:0}
+  .rules .num{flex:none;width:24px;height:24px;border-radius:8px;background:var(--green-soft);color:var(--green-deep);display:grid;place-items:center;font-weight:800;font-size:13px}
+
+  .lead-row{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px dashed var(--line)}
+  .lead-row:last-child{border-bottom:0;padding-bottom:0}
+  .lead-row .rank{flex:none;font-weight:900;width:22px;color:var(--muted);font-size:14px}
+  .lead-row .la{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:14px;flex:none}
+  .lead-row .ln{flex:1;font-weight:700;font-size:14px}
+  .lead-row .lp{font-weight:800;color:var(--green-deep);font-size:13px;background:var(--green-soft);padding:3px 9px;border-radius:20px}
+
+  .webinar{background:linear-gradient(135deg,var(--green-deep),var(--green));color:#fff;border:0}
+  .webinar h3{color:#fff}
+  .webinar .when{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.18);padding:5px 12px;border-radius:20px;font-weight:700;font-size:13px;margin-bottom:10px}
+  .webinar p{font-size:15px;font-weight:700;line-height:1.4;margin-bottom:16px}
+  .webinar .btn-yellow{width:100%;justify-content:center}
+
+  .cstats{display:flex;flex-direction:column;gap:12px}
+  .cstat{display:flex;align-items:center;gap:12px}
+  .cstat .ic{width:40px;height:40px;border-radius:12px;background:var(--yellow-soft);display:grid;place-items:center;font-size:20px;flex:none}
+  .cstat b{font-size:20px;font-weight:900;display:block;line-height:1}
+  .cstat small{color:var(--muted);font-size:13px}
+
+  .hidden{display:none !important}
+</style>
+</head>
+<body>
+
+<div class="demo-flag">🦥 דמו פורטל · <b>השקעות לעצלנים</b> · הקהילה</div>
+
+<header class="topbar"><div class="wrap">
+  <div class="brand"><span class="sloth">🦥</span> השקעות לעצלנים</div>
+  <nav class="nav">
+    <a href="index.html">הבית שלי</a>
+    <a href="lesson.html">הקורס</a>
+    <a href="game.html">משחק תרגול</a>
+    <a href="community.html" class="active">הקהילה</a>
+    <a href="calculator.html">מחשבונים</a>
+  </nav>
+  <div class="me"><a href="admin.html" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);font-weight:600" title="מבט הבעלים">⚙️ ניהול</a><a href="profile.html" style="display:flex;align-items:center;gap:10px"><div style="text-align:left"><div style="font-weight:700;line-height:1.1">דנה</div><small>חברה מאז 2026</small></div><div class="avatar">ד</div></a></div>
+</div></header>
+
+<div class="wrap">
+  <div class="community">
+
+    <!-- ===== MAIN FEED ===== -->
+    <main>
+      <div class="chips" id="chips">
+        <button class="chip active" data-cat="all">הכל</button>
+        <button class="chip" data-cat="beginners">שאלות מתחילים</button>
+        <button class="chip" data-cat="portfolio">התיק שלי</button>
+        <button class="chip" data-cat="wins">הצלחות</button>
+        <button class="chip" data-cat="fees">דמי ניהול</button>
+        <button class="chip" data-cat="pension">פנסיה</button>
+      </div>
+
+      <!-- composer -->
+      <div class="composer">
+        <div class="row">
+          <div class="avatar">ד</div>
+          <textarea id="composerText" placeholder="שתף משהו עם הקהילה…"></textarea>
+        </div>
+        <div class="foot">
+          <small>🦥 בלי המלצות מניה ספציפיות · שואלים בנחת</small>
+          <button class="btn btn-green" id="postBtn">פרסם</button>
+        </div>
+      </div>
+
+      <!-- feed -->
+      <div class="feed" id="feed"></div>
+    </main>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="side">
+
+      <div class="card">
+        <h3>📜 כללי הקהילה</h3>
+        <ul class="rules">
+          <li><span class="num">1</span><span>בלי המלצות על מניה ספציפית. מדברים על שיטה ועקרונות, לא טיפים חמים.</span></li>
+          <li><span class="num">2</span><span>מכבדים אחד את השני. כל אחד כאן בקצב שלו.</span></li>
+          <li><span class="num">3</span><span>אין שאלה טיפשית. אם תהית, בטוח עוד מישהו תהה.</span></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>🏆 החברים המובילים החודש</h3>
+        <div class="lead-row"><span class="rank">1</span><span class="la" style="background:linear-gradient(135deg,#1f9e57,#0f7a40)">י</span><span class="ln">יוסי כהן</span><span class="lp">1,840</span></div>
+        <div class="lead-row"><span class="rank">2</span><span class="la" style="background:linear-gradient(135deg,#ff8a3d,#d63a3a)">ש</span><span class="ln">שירה לוי</span><span class="lp">1,520</span></div>
+        <div class="lead-row"><span class="rank">3</span><span class="la" style="background:linear-gradient(135deg,#6a5acd,#3b3197)">מ</span><span class="ln">מאיר אזולאי</span><span class="lp">1,310</span></div>
+        <div class="lead-row"><span class="rank">4</span><span class="la" style="background:linear-gradient(135deg,#2f8592,#003b46)">נ</span><span class="ln">נועה פרידמן</span><span class="lp">1,095</span></div>
+        <div class="lead-row"><span class="rank">5</span><span class="la" style="background:linear-gradient(135deg,#ffd23f,#ff8a3d)">ד</span><span class="ln">דנה (את)</span><span class="lp">980</span></div>
+      </div>
+
+      <div class="card webinar">
+        <h3>🎥 הוובינר הקרוב</h3>
+        <span class="when">📅 היום · 21:00</span>
+        <p>טעויות נפוצות של משקיעים מתחילים (ואיך לעצן אותן)</p>
+        <button class="btn btn-yellow" id="joinWebinar">הצטרפו לוובינר</button>
+      </div>
+
+      <div class="card">
+        <h3>📊 סטטיסטיקת קהילה</h3>
+        <div class="cstats">
+          <div class="cstat"><span class="ic">👥</span><div><b>2,340</b><small>חברים בקהילה</small></div></div>
+          <div class="cstat"><span class="ic">💬</span><div><b>128</b><small>פוסטים החודש</small></div></div>
+          <div class="cstat"><span class="ic">✅</span><div><b>94%</b><small>מהשאלות מקבלות מענה</small></div></div>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+</div>
+
+<footer><div class="wrap"><div>© השקעות לעצלנים · הדרך הקלה להשקעות פסיביות 🦥</div><div class="credit">נבנה ע"י הלל</div></div></footer>
+
+<script src="assets/portal.js"></script>
+<script>
+(function(){
+  const CAT_LABELS = {
+    beginners:'שאלות מתחילים', portfolio:'התיק שלי', wins:'הצלחות',
+    fees:'דמי ניהול', pension:'פנסיה'
+  };
+  const COLORS = [
+    'linear-gradient(135deg,#1f9e57,#0f7a40)',
+    'linear-gradient(135deg,#ff8a3d,#d63a3a)',
+    'linear-gradient(135deg,#6a5acd,#3b3197)',
+    'linear-gradient(135deg,#2f8592,#003b46)',
+    'linear-gradient(135deg,#ffd23f,#ff8a3d)'
+  ];
+  let colorIdx = 0;
+  const nextColor = () => COLORS[(colorIdx++) % COLORS.length];
+
+  // seed posts (newest-ish first, pinned forced to top)
+  const posts = [
+    {
+      pinned:true, author:'צוות השקעות לעצלנים', initial:'🦥', verified:true,
+      color:'linear-gradient(135deg,#1f9e57,#0f7a40)', time:'נעוץ', cat:'beginners',
+      body:'ברוכים הבאים לקהילה! 🦥\nכאן אנחנו לומדים להשקיע בעצלנות חכמה: מדדים רחבים, דמי ניהול נמוכים, וסבלנות.\nכלל ברזל אחד: לא נותנים פה המלצות על מניה ספציפית. מדברים על שיטה, לא על טיפים.\nתתחילו מלהציג את עצמכם בתגובות 👇',
+      likes:214, liked:false,
+      comments:[
+        {author:'יוסי כהן', initial:'י', color:'linear-gradient(135deg,#1f9e57,#0f7a40)', text:'הצטרפתי לפני שבוע וכבר פתחתי תיק ראשון. תודה על הסבלנות 🙏'},
+        {author:'שירה לוי', initial:'ש', color:'linear-gradient(135deg,#ff8a3d,#d63a3a)', text:'הקהילה הכי רגועה שהייתי בה. סוף סוף בלי לחץ של "תקנו עכשיו".'}
+      ]
+    },
+    {
+      author:'נועה פרידמן', initial:'נ', color:'linear-gradient(135deg,#2f8592,#003b46)',
+      time:'לפני 2 שעות', cat:'beginners',
+      body:'שאלה של מתחילה: מה ההבדל בין קרן מחקה מדד לבין קרן סל? ראיתי את שני המושגים והתבלבלתי קצת. תודה מראש 🙏',
+      likes:18, liked:false,
+      comments:[
+        {author:'מאיר אזולאי', initial:'מ', color:'linear-gradient(135deg,#6a5acd,#3b3197)', text:'שתיהן עוקבות אחרי מדד. ההבדל בעיקר במבנה ובאופן המסחר. לרוב העצלן זה כמעט לא משנה, מה שחשוב זה דמי ניהול נמוכים ומדד רחב.'}
+      ]
+    },
+    {
+      author:'יוסי כהן', initial:'י', color:'linear-gradient(135deg,#1f9e57,#0f7a40)',
+      time:'לפני 5 שעות', cat:'wins',
+      body:'עדכון קטן שעושה לי טוב: שנה שלמה של הפקדה קבועה אחת לחודש, בלי להסתכל על השוק כל יום. סוף סוף הפסקתי להילחץ מכל ירידה. השיטה העצלנית פשוט עובדת 💪🦥',
+      likes:73, liked:false,
+      comments:[]
+    },
+    {
+      author:'שירה לוי', initial:'ש', color:'linear-gradient(135deg,#ff8a3d,#d63a3a)',
+      time:'אתמול', cat:'fees',
+      body:'בדקתי כמה דמי ניהול שילמתי בקרן הישנה שלי לעומת מה שלמדתי פה, וכמעט נפלתי מהכיסא. עשיתי השוואה והעברתי למשהו עם דמי ניהול נמוכים בהרבה. ההפרש לאורך שנים פשוט עצום.',
+      likes:56, liked:false,
+      comments:[
+        {author:'נועה פרידמן', initial:'נ', color:'linear-gradient(135deg,#2f8592,#003b46)', text:'בדיוק עברתי את אותו תהליך. אחוז קטן בדמי ניהול נשמע כלום עד שמכפילים אותו ב-20 שנה.'}
+      ]
+    },
+    {
+      author:'מאיר אזולאי', initial:'מ', color:'linear-gradient(135deg,#6a5acd,#3b3197)',
+      time:'לפני יומיים', cat:'portfolio',
+      body:'שיתוף מהתיק שלי (בלי שמות של מוצרים, לפי הכללים): בניתי תיק פשוט של מדד עולמי רחב + רכיב סולידי קטן, והפקדה אוטומטית בכל תחילת חודש. הכי פחות מגע יד אדם שאפשר. מישהו עם מבנה דומה?',
+      likes:41, liked:false,
+      comments:[]
+    },
+    {
+      author:'אבי שטרן', initial:'א', color:'linear-gradient(135deg,#ffd23f,#ff8a3d)',
+      time:'לפני 3 ימים', cat:'pension',
+      body:'שאלה על פנסיה: שווה לעבור למסלול מנייתי בקרן הפנסיה אם נשארו לי עוד הרבה שנים לפרישה? קראתי פה כמה דברים אבל אשמח לשמוע מהניסיון שלכם איך חשבתם על זה.',
+      likes:29, liked:false,
+      comments:[
+        {author:'יוסי כהן', initial:'י', color:'linear-gradient(135deg,#1f9e57,#0f7a40)', text:'אופק זמן ארוך בדרך כלל מאפשר יותר סיכון. אבל זה תלוי בך ובשינה שלך בלילה. תעבור על השיעור של בחירת מסלול, הוא ממש עזר לי.'},
+        {author:'שירה לוי', initial:'ש', color:'linear-gradient(135deg,#ff8a3d,#d63a3a)', text:'גם אני התלבטתי. בסוף הבנתי שהדבר הכי חשוב זה פשוט להפקיד עוד, לא רק לבחור מסלול.'}
+      ]
+    }
+  ];
+
+  const feedEl = document.getElementById('feed');
+  let activeCat = 'all';
+
+  function escapeHtml(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function commentHtml(c){
+    return `<div class="comment">
+        <div class="ca" style="background:${c.color}">${escapeHtml(c.initial)}</div>
+        <div class="ctext"><b>${escapeHtml(c.author)}</b><span>${escapeHtml(c.text)}</span></div>
+      </div>`;
+  }
+
+  function postHtml(p, idx){
+    const catTag = p.cat && CAT_LABELS[p.cat]
+      ? `<div class="post-cat"><span class="tag done"># ${CAT_LABELS[p.cat]}</span></div>` : '';
+    const verified = p.verified ? `<span class="verified">✓ רשמי</span>` : '';
+    const pin = p.pinned ? `<span class="pin-badge">📌 נעוץ</span>` : '';
+    const comments = (p.comments && p.comments.length)
+      ? `<div class="comments">${p.comments.map(commentHtml).join('')}</div>` : '';
+    const commentCount = p.comments ? p.comments.length : 0;
+    return `<article class="post${p.pinned?' pinned':''}" data-cat="${p.cat||'all'}" data-idx="${idx}">
+        <div class="post-head">
+          <div class="avatar" style="background:${p.color}">${escapeHtml(p.initial)}</div>
+          <div class="post-who">
+            <b>${escapeHtml(p.author)} ${verified}</b>
+            <small>${escapeHtml(p.time)}</small>
+          </div>
+          ${pin}
+        </div>
+        <div class="post-body">${escapeHtml(p.body)}</div>
+        ${catTag}
+        <div class="post-actions">
+          <button class="act like-btn${p.liked?' liked':''}" data-idx="${idx}">👍 <span class="lc">${p.likes}</span></button>
+          <button class="act">💬 ${commentCount} תגובות</button>
+          <button class="act">🔗 שתף</button>
+        </div>
+        ${comments}
+      </article>`;
+  }
+
+  function render(){
+    feedEl.innerHTML = posts.map((p,i)=>postHtml(p,i)).join('');
+    // apply category filter
+    feedEl.querySelectorAll('.post').forEach(el=>{
+      const c = el.getAttribute('data-cat');
+      const isPinned = el.classList.contains('pinned');
+      if(activeCat==='all' || c===activeCat || isPinned) el.classList.remove('hidden');
+      else el.classList.add('hidden');
+    });
+  }
+
+  // like toggle (event delegation)
+  feedEl.addEventListener('click', e=>{
+    const btn = e.target.closest('.like-btn');
+    if(!btn) return;
+    const idx = +btn.getAttribute('data-idx');
+    const p = posts[idx];
+    p.liked = !p.liked;
+    p.likes += p.liked ? 1 : -1;
+    btn.classList.toggle('liked', p.liked);
+    btn.querySelector('.lc').textContent = p.likes;
+  });
+
+  // chips
+  document.getElementById('chips').addEventListener('click', e=>{
+    const chip = e.target.closest('.chip');
+    if(!chip) return;
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    activeCat = chip.getAttribute('data-cat');
+    render();
+  });
+
+  // composer
+  document.getElementById('postBtn').addEventListener('click', ()=>{
+    const ta = document.getElementById('composerText');
+    const val = ta.value.trim();
+    if(!val){ Portal.toast('כתוב משהו קודם'); return; }
+    posts.splice(1, 0, {          // after the pinned post
+      author:'דנה', initial:'ד', color:nextColor(),
+      time:'עכשיו', cat:activeCat==='all'?'beginners':activeCat,
+      body:val, likes:0, liked:false, comments:[]
+    });
+    ta.value='';
+    render();
+    Portal.toast('הפוסט פורסם 🦥');
+  });
+
+  // webinar
+  document.getElementById('joinWebinar').addEventListener('click', ()=>{
+    Portal.toast('נרשמת לוובינר! נשלח לך תזכורת 🎥');
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

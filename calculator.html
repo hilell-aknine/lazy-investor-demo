@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מחשבון ריבית דריבית · השקעות לעצלנים 🦥</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<link href="assets/brand.css" rel="stylesheet">
+<style>
+/* ===== page-specific only · tokens & shared classes live in brand.css ===== */
+.page-head{text-align:center;padding:34px 0 8px}
+.page-head h1{font-size:30px;font-weight:900;line-height:1.2}
+.page-head h1 span{color:var(--green-deep)}
+.page-head p{color:var(--muted);font-weight:500;font-size:16px;margin-top:8px}
+
+.calc-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:26px;align-items:start;padding:18px 0 10px}
+@media(max-width:900px){.calc-grid{grid-template-columns:1fr}}
+
+/* inputs panel */
+.inputs{padding:24px}
+.inputs h2{font-size:18px;font-weight:900;margin-bottom:4px}
+.inputs .hint-top{color:var(--muted);font-size:13px;margin-bottom:18px}
+.field{margin-bottom:20px}
+.field .lab{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.field .lab label{font-weight:700;font-size:15px}
+.field .lab .num{display:flex;align-items:center;gap:4px;background:var(--green-soft);border:1px solid var(--line);
+  border-radius:11px;padding:4px 8px}
+.field .lab .num input{width:84px;border:0;background:transparent;font-family:inherit;font-weight:800;font-size:15px;
+  color:var(--green-deep);text-align:left;outline:none;-moz-appearance:textfield}
+.field .lab .num input::-webkit-outer-spin-button,
+.field .lab .num input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.field .lab .num .u{font-weight:800;font-size:13px;color:var(--green-deep);opacity:.75}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:6px;
+  background:var(--line);outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:24px;height:24px;border-radius:50%;
+  background:var(--yellow);border:3px solid #fff;box-shadow:0 3px 8px rgba(15,122,64,.3);cursor:pointer;transition:transform .12s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.12)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--yellow);
+  border:3px solid #fff;box-shadow:0 3px 8px rgba(15,122,64,.3);cursor:pointer}
+.field .note{color:var(--muted);font-size:12.5px;margin-top:7px}
+
+/* results */
+.results{display:flex;flex-direction:column;gap:18px}
+.hero-num{background:linear-gradient(135deg,var(--green-deep) 0%,var(--green) 60%,#34b86d 100%);color:#fff;
+  border-radius:var(--radius);padding:26px 24px;box-shadow:var(--shadow-lg);position:relative;overflow:hidden}
+.hero-num::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(circle at 85% 15%,rgba(255,255,255,.16),transparent 45%)}
+.hero-num .cap{position:relative;font-weight:700;font-size:14px;opacity:.9}
+.hero-num .big{position:relative;font-size:42px;font-weight:900;line-height:1.1;margin-top:4px;letter-spacing:-.5px}
+.hero-num .sub{position:relative;font-size:13.5px;opacity:.88;margin-top:6px;font-weight:500}
+.hero-num .sloth-mark{position:absolute;bottom:-14px;left:8px;font-size:84px;opacity:.14;line-height:1}
+
+.split{padding:20px}
+.split .row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.split .row .k{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px}
+.split .row .k .sw{width:14px;height:14px;border-radius:4px}
+.split .row .v{font-weight:900;font-size:17px}
+.sw.dep{background:var(--green)}
+.sw.pro{background:var(--yellow)}
+.splitbar{height:18px;border-radius:10px;overflow:hidden;display:flex;background:var(--line);margin:14px 0 4px}
+.splitbar .seg{height:100%;transition:width .4s cubic-bezier(.2,.8,.3,1)}
+.splitbar .seg.dep{background:var(--green)}
+.splitbar .seg.pro{background:var(--yellow)}
+.splitbar .seg span{display:block;height:100%}
+.sloth-line{background:var(--yellow-soft);border:1px solid #f3e2a0;border-right:5px solid var(--yellow);
+  border-radius:14px;padding:13px 16px;font-weight:700;color:#5a4500;font-size:14.5px;line-height:1.45}
+
+/* chart */
+.chart-panel{padding:22px}
+.chart-panel .head{margin-bottom:6px}
+.chart-panel .head h2{font-size:18px}
+.chart-legend{display:flex;gap:18px;margin-bottom:14px;font-size:13px;font-weight:700;color:var(--muted)}
+.chart-legend span{display:inline-flex;align-items:center;gap:7px}
+.chart-legend .sw{width:13px;height:13px;border-radius:4px}
+.chart-wrap{width:100%;overflow:hidden}
+svg.chart{width:100%;height:auto;display:block;font-family:'Heebo',sans-serif}
+svg.chart .bar-dep{fill:var(--green)}
+svg.chart .bar-pro{fill:var(--yellow)}
+svg.chart .grid-line{stroke:var(--line);stroke-width:1}
+svg.chart .ax-lbl{fill:var(--muted);font-size:11px;font-weight:600}
+svg.chart .col-grp{cursor:default}
+svg.chart .col-grp:hover .bar-dep{fill:var(--green-deep)}
+svg.chart .col-grp:hover .bar-pro{fill:var(--orange)}
+.bartip{position:fixed;pointer-events:none;background:var(--ink);color:#fff;border-radius:10px;padding:8px 11px;
+  font-size:12.5px;font-weight:600;line-height:1.5;z-index:300;opacity:0;transition:opacity .12s;white-space:nowrap;
+  box-shadow:var(--shadow-lg);transform:translate(-50%,-110%)}
+.bartip.show{opacity:1}
+.bartip b{color:var(--yellow)}
+
+.disclaimer{text-align:center;color:var(--muted);font-size:13px;padding:8px 0 4px;line-height:1.5}
+</style>
+</head>
+<body>
+
+<div class="demo-flag">🦥 דמו פורטל · <b>השקעות לעצלנים</b> · מחשבונים</div>
+
+<header class="topbar"><div class="wrap">
+  <div class="brand"><span class="sloth">🦥</span> השקעות לעצלנים</div>
+  <nav class="nav">
+    <a href="index.html">הבית שלי</a>
+    <a href="lesson.html">הקורס</a>
+    <a href="game.html">משחק תרגול</a>
+    <a href="community.html">הקהילה</a>
+    <a href="calculator.html" class="active">מחשבונים</a>
+  </nav>
+  <div class="me"><a href="admin.html" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);font-weight:600" title="מבט הבעלים">⚙️ ניהול</a><a href="profile.html" style="display:flex;align-items:center;gap:10px"><div style="text-align:left"><div style="font-weight:700;line-height:1.1">דנה</div><small>חברה מאז 2026</small></div><div class="avatar">ד</div></a></div>
+</div></header>
+
+<main class="wrap">
+
+  <div class="page-head">
+    <h1>מחשבון <span>ריבית דריבית</span> 🧮</h1>
+    <p>תראה איך הפקדה חודשית קטנה הופכת לסכום גדול לאורך זמן.</p>
+  </div>
+
+  <div class="calc-grid">
+
+    <!-- INPUTS -->
+    <section class="panel inputs">
+      <h2>הנתונים שלך</h2>
+      <div class="hint-top">הזז את המחוונים או הקלד מספר. החישוב מתעדכן מיד.</div>
+
+      <div class="field">
+        <div class="lab">
+          <label for="r-monthly">הפקדה חודשית</label>
+          <div class="num"><input id="n-monthly" type="number" min="100" max="10000" step="50" value="1000"><span class="u">₪</span></div>
+        </div>
+        <input id="r-monthly" type="range" min="100" max="10000" step="50" value="1000">
+      </div>
+
+      <div class="field">
+        <div class="lab">
+          <label for="r-initial">סכום התחלתי</label>
+          <div class="num"><input id="n-initial" type="number" min="0" max="500000" step="1000" value="10000"><span class="u">₪</span></div>
+        </div>
+        <input id="r-initial" type="range" min="0" max="500000" step="1000" value="10000">
+      </div>
+
+      <div class="field">
+        <div class="lab">
+          <label for="r-rate">תשואה שנתית ממוצעת</label>
+          <div class="num"><input id="n-rate" type="number" min="1" max="15" step="0.5" value="8"><span class="u">%</span></div>
+        </div>
+        <input id="r-rate" type="range" min="1" max="15" step="0.5" value="8">
+        <div class="note">ממוצע היסטורי של מדד מנייתי רחב הוא בערך 7-9%.</div>
+      </div>
+
+      <div class="field" style="margin-bottom:4px">
+        <div class="lab">
+          <label for="r-years">מספר שנים</label>
+          <div class="num"><input id="n-years" type="number" min="1" max="45" step="1" value="25"><span class="u">שנים</span></div>
+        </div>
+        <input id="r-years" type="range" min="1" max="45" step="1" value="25">
+      </div>
+    </section>
+
+    <!-- RESULTS -->
+    <div class="results">
+
+      <div class="hero-num">
+        <div class="cap">הסכום הצפוי בסוף הדרך</div>
+        <div class="big" id="out-fv">₪0</div>
+        <div class="sub" id="out-fv-sub"></div>
+        <div class="sloth-mark">🦥</div>
+      </div>
+
+      <section class="panel split">
+        <div class="row">
+          <div class="k"><span class="sw dep"></span> סך ההפקדות שלך</div>
+          <div class="v" id="out-dep">₪0</div>
+        </div>
+        <div class="row">
+          <div class="k"><span class="sw pro"></span> הרווח (ריבית דריבית)</div>
+          <div class="v" id="out-pro">₪0</div>
+        </div>
+        <div class="splitbar" aria-hidden="true">
+          <div class="seg dep" id="seg-dep"></div>
+          <div class="seg pro" id="seg-pro"></div>
+        </div>
+        <div class="sloth-line" id="sloth-line" style="margin-top:14px"></div>
+      </section>
+
+      <section class="panel chart-panel">
+        <div class="head"><h2>הצמיחה שנה אחרי שנה</h2></div>
+        <div class="chart-legend">
+          <span><span class="sw" style="background:var(--green)"></span> ההפקדות שלך</span>
+          <span><span class="sw" style="background:var(--yellow)"></span> הרווח שנצבר</span>
+        </div>
+        <div class="chart-wrap"><svg class="chart" id="chart" preserveAspectRatio="xMidYMid meet" role="img" aria-label="גרף צמיחת ההשקעה לאורך השנים"></svg></div>
+      </section>
+
+      <div class="disclaimer">המספרים להמחשה בלבד, לא ייעוץ השקעות. תשואות עבר אינן מבטיחות תשואות עתיד.</div>
+
+    </div>
+
+  </div>
+</main>
+
+<div class="bartip" id="bartip"></div>
+
+<footer><div class="wrap"><div>© השקעות לעצלנים · הדרך הקלה להשקעות פסיביות 🦥</div><div class="credit">נבנה ע"י הלל</div></div></footer>
+
+<script src="assets/portal.js"></script>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- helpers ---------- */
+  var fmt = new Intl.NumberFormat('he-IL', {maximumFractionDigits:0});
+  function shekel(n){ return '₪' + fmt.format(Math.round(n)); }
+  function clamp(v,min,max){ v=isNaN(v)?min:v; return Math.min(max, Math.max(min, v)); }
+
+  /* ---------- pair slider <-> number input ---------- */
+  function pair(id){
+    return {
+      r: document.getElementById('r-'+id),
+      n: document.getElementById('n-'+id),
+      min: function(){ return parseFloat(this.r.min); },
+      max: function(){ return parseFloat(this.r.max); },
+      val: function(){ return parseFloat(this.r.value); }
+    };
+  }
+  var P = { monthly:pair('monthly'), initial:pair('initial'), rate:pair('rate'), years:pair('years') };
+
+  function bind(p){
+    p.r.addEventListener('input', function(){ p.n.value = p.r.value; compute(); });
+    // number input: live as they type, but only re-sync slider within range
+    p.n.addEventListener('input', function(){
+      var v = parseFloat(p.n.value);
+      if(!isNaN(v)){ p.r.value = clamp(v, p.min(), p.max()); }
+      compute();
+    });
+    // on blur, snap the number field into the valid range
+    p.n.addEventListener('blur', function(){
+      var v = clamp(parseFloat(p.n.value), p.min(), p.max());
+      p.n.value = v; p.r.value = v; compute();
+    });
+  }
+  Object.keys(P).forEach(function(k){ bind(P[k]); });
+
+  /* ---------- read inputs (clamped) ---------- */
+  function readInputs(){
+    var monthly = clamp(parseFloat(P.monthly.n.value), P.monthly.min(), P.monthly.max());
+    var initial = clamp(parseFloat(P.initial.n.value), P.initial.min(), P.initial.max());
+    var rate    = clamp(parseFloat(P.rate.n.value),    P.rate.min(),    P.rate.max());
+    var years   = Math.round(clamp(parseFloat(P.years.n.value), P.years.min(), P.years.max()));
+    return {monthly:monthly, initial:initial, rate:rate, years:years};
+  }
+
+  /* ---------- core math: monthly compounding ---------- */
+  // FV = initial*(1+r)^n + monthly*(((1+r)^n - 1)/r)   ; r = annual/100/12 ; n = years*12
+  function futureValue(initial, monthly, annualRate, months){
+    var r = annualRate/100/12;
+    if (r === 0){
+      return initial + monthly*months;
+    }
+    var growth = Math.pow(1+r, months);
+    return initial*growth + monthly*((growth - 1)/r);
+  }
+
+  /* ---------- the chart (hand-rolled SVG, stacked bars) ---------- */
+  var tip = document.getElementById('bartip');
+  function buildChart(svg, series, years){
+    // series: array per displayed year of {label, deposited, value}
+    var W = 640, H = 260;
+    var padL = 8, padR = 8, padT = 14, padB = 26;
+    var plotW = W - padL - padR;
+    var plotH = H - padT - padB;
+    var maxVal = Math.max.apply(null, series.map(function(s){ return s.value; }));
+    if (maxVal <= 0) maxVal = 1;
+
+    var n = series.length;
+    var slot = plotW / n;
+    var barW = Math.min(slot * 0.62, 46);
+
+    var parts = [];
+    parts.push('<g>');
+    // horizontal gridlines + y labels (4 lines)
+    for (var g=0; g<=4; g++){
+      var gy = padT + plotH * (g/4);
+      var gVal = maxVal * (1 - g/4);
+      parts.push('<line class="grid-line" x1="'+padL+'" y1="'+gy.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+gy.toFixed(1)+'"/>');
+      // y label on the right (RTL)
+      parts.push('<text class="ax-lbl" x="'+(W-padR)+'" y="'+(gy-4).toFixed(1)+'" text-anchor="end">'+shortNum(gVal)+'</text>');
+    }
+    parts.push('</g>');
+
+    series.forEach(function(s, i){
+      var cx = padL + slot*i + slot/2;
+      var x = cx - barW/2;
+      var depH = plotH * (s.deposited / maxVal);
+      var totH = plotH * (s.value / maxVal);
+      var proH = Math.max(0, totH - depH);
+      var yDepTop = padT + plotH - depH;
+      var yProTop = yDepTop - proH;
+      var profit = Math.max(0, s.value - s.deposited);
+
+      parts.push(
+        '<g class="col-grp" '+
+        'data-year="'+s.label+'" data-dep="'+Math.round(s.deposited)+'" '+
+        'data-pro="'+Math.round(profit)+'" data-tot="'+Math.round(s.value)+'">'
+      );
+      // profit segment (top, yellow)
+      if (proH > 0.3){
+        parts.push('<rect class="bar-pro" x="'+x.toFixed(1)+'" y="'+yProTop.toFixed(1)+'" width="'+barW.toFixed(1)+
+          '" height="'+proH.toFixed(1)+'" rx="3"/>');
+      }
+      // deposited segment (bottom, green)
+      parts.push('<rect class="bar-dep" x="'+x.toFixed(1)+'" y="'+yDepTop.toFixed(1)+'" width="'+barW.toFixed(1)+
+        '" height="'+depH.toFixed(1)+'" rx="3"/>');
+      // x label
+      parts.push('<text class="ax-lbl" x="'+cx.toFixed(1)+'" y="'+(H-8)+'" text-anchor="middle">'+s.label+'</text>');
+      parts.push('</g>');
+    });
+
+    svg.setAttribute('viewBox', '0 0 '+W+' '+H);
+    svg.innerHTML = parts.join('');
+
+    // tooltips
+    var grps = svg.querySelectorAll('.col-grp');
+    grps.forEach(function(grp){
+      grp.addEventListener('mousemove', function(e){
+        tip.innerHTML =
+          'שנה '+grp.getAttribute('data-year')+'<br>'+
+          'הפקדות: '+shekel(+grp.getAttribute('data-dep'))+'<br>'+
+          'רווח: <b>'+shekel(+grp.getAttribute('data-pro'))+'</b><br>'+
+          'סה"כ: '+shekel(+grp.getAttribute('data-tot'));
+        tip.style.left = e.clientX+'px';
+        tip.style.top  = e.clientY+'px';
+        tip.classList.add('show');
+      });
+      grp.addEventListener('mouseleave', function(){ tip.classList.remove('show'); });
+    });
+  }
+
+  function shortNum(v){
+    if (v >= 1000000) return (v/1000000).toFixed(v>=10000000?0:1).replace(/\.0$/,'')+'M';
+    if (v >= 1000) return Math.round(v/1000)+'K';
+    return Math.round(v).toString();
+  }
+
+  /* pick a clean set of years to show as bars (cap at ~12 columns) */
+  function pickYears(total){
+    if (total <= 12){
+      var arr = [];
+      for (var y=1; y<=total; y++) arr.push(y);
+      return arr;
+    }
+    var step = Math.ceil(total/11);
+    var out = [];
+    for (var yy=step; yy<total; yy+=step) out.push(yy);
+    if (out[out.length-1] !== total) out.push(total);
+    return out;
+  }
+
+  /* ---------- main compute + render ---------- */
+  var chartSvg = document.getElementById('chart');
+  function compute(){
+    var inp = readInputs();
+    var months = inp.years * 12;
+
+    var fv = futureValue(inp.initial, inp.monthly, inp.rate, months);
+    var totalDeposited = inp.initial + inp.monthly * months;
+    var totalProfit = fv - totalDeposited;
+    if (totalProfit < 0) totalProfit = 0;
+
+    // hero
+    document.getElementById('out-fv').textContent = shekel(fv);
+    document.getElementById('out-fv-sub').textContent =
+      'אחרי ' + inp.years + ' שנים, בהפקדה של ' + shekel(inp.monthly) + ' בחודש בתשואה של ' + inp.rate + '%.';
+
+    // breakdown
+    document.getElementById('out-dep').textContent = shekel(totalDeposited);
+    document.getElementById('out-pro').textContent = shekel(totalProfit);
+
+    var totForBar = totalDeposited + totalProfit;
+    var depPct = totForBar > 0 ? (totalDeposited/totForBar*100) : 100;
+    document.getElementById('seg-dep').style.width = depPct.toFixed(2) + '%';
+    document.getElementById('seg-pro').style.width = (100-depPct).toFixed(2) + '%';
+
+    // sloth line (adaptive)
+    var line;
+    if (totalProfit > totalDeposited){
+      line = '🦥 הכסף שלך עבד יותר ממך! הרווח גדול מסך ההפקדות.';
+    } else if (totalProfit > totalDeposited*0.5){
+      line = '🦥 ריבית דריבית מתחילה להראות שריר. הרווח כבר חלק רציני מהסכום.';
+    } else if (inp.years < 5){
+      line = '🦥 תן לזה זמן. הקסם האמיתי של ריבית דריבית מתפוצץ בשנים המאוחרות.';
+    } else {
+      line = '🦥 כל שנה שעוברת, הכסף עובד קצת יותר קשה בשבילך.';
+    }
+    document.getElementById('sloth-line').textContent = line;
+
+    // chart: cumulative per displayed year
+    var picks = pickYears(inp.years);
+    var series = picks.map(function(y){
+      var m = y * 12;
+      var val = futureValue(inp.initial, inp.monthly, inp.rate, m);
+      var dep = inp.initial + inp.monthly * m;
+      return { label: String(y), deposited: dep, value: val };
+    });
+    buildChart(chartSvg, series, inp.years);
+  }
+
+  compute();
+})();
+</script>
+</body>
+</html>

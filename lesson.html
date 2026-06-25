@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>השיעור שלי · השקעות לעצלנים 🦥</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<link href="assets/brand.css" rel="stylesheet">
+<style>
+/* ===== page-specific only · tokens & shared classes live in brand.css ===== */
+.lesson-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:26px;align-items:start;padding:30px 0 10px}
+@media(max-width:900px){.lesson-grid{grid-template-columns:1fr}}
+
+/* video placeholder */
+.video{position:relative;aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden;
+  background:linear-gradient(135deg,var(--green-deep) 0%,var(--green) 55%,#34b86d 100%);
+  box-shadow:var(--shadow-lg);display:grid;place-items:center;cursor:pointer}
+.video::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.18),transparent 45%),
+             radial-gradient(circle at 80% 90%,rgba(15,36,28,.28),transparent 50%)}
+.video .play{position:relative;width:84px;height:84px;border-radius:50%;background:rgba(255,255,255,.92);
+  display:grid;place-items:center;box-shadow:0 12px 30px rgba(0,0,0,.25);transition:transform .2s,background .2s}
+.video .play::after{content:"";margin-right:-6px;border-style:solid;border-width:16px 0 16px 26px;
+  border-color:transparent transparent transparent var(--green-deep)}
+.video:hover .play{transform:scale(1.08);background:#fff}
+.video .dur{position:absolute;bottom:14px;left:14px;background:rgba(15,36,28,.75);color:#fff;
+  font-weight:700;font-size:13px;padding:5px 12px;border-radius:20px;backdrop-filter:blur(4px)}
+.video .vtitle{position:absolute;top:16px;right:18px;left:18px;color:#fff;font-weight:800;font-size:17px;
+  text-shadow:0 2px 12px rgba(0,0,0,.4);line-height:1.3}
+.video .vtitle small{display:block;font-weight:500;opacity:.85;font-size:13px;margin-bottom:2px}
+
+.lesson-main h1{font-size:28px;font-weight:900;margin:24px 0 8px;line-height:1.25}
+.lesson-main .lead-meta{color:var(--muted);font-weight:500;font-size:14px;margin-bottom:18px}
+.lesson-body p{margin-bottom:16px;font-size:17px;color:var(--ink)}
+.callout{background:var(--yellow-soft);border:1px solid #f3e2a0;border-right:5px solid var(--yellow);
+  border-radius:16px;padding:18px 20px;margin:22px 0}
+.callout .lab{display:flex;align-items:center;gap:8px;font-weight:900;color:#9a7400;margin-bottom:6px;font-size:15px}
+.callout p{margin:0;font-weight:600;color:#5a4500;font-size:16px}
+.lesson-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+
+/* sidebar chapters */
+.side .panel{padding:20px}
+.side h3{font-size:17px;font-weight:900;margin-bottom:4px}
+.side .sub{color:var(--muted);font-size:13px;margin-bottom:14px}
+.chap{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:13px;margin-bottom:6px;
+  transition:background .15s;cursor:default}
+.chap:hover{background:var(--green-soft)}
+.chap.active{background:var(--green-soft)}
+.chap .dot{flex:0 0 26px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+  font-size:13px;font-weight:800;background:var(--line);color:var(--muted)}
+.chap.done .dot{background:var(--green);color:#fff}
+.chap.active .dot{background:var(--yellow);color:#5a4500}
+.chap .txt{font-size:14px;font-weight:600;line-height:1.35}
+.chap.active .txt{color:var(--green-deep);font-weight:800}
+.chap .nowtag{font-size:11px;font-weight:800;color:#a8780a}
+.side .prog{margin-top:16px}
+.side .prog .row{display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:7px}
+
+/* ===== AI teacher ===== */
+.ai-fab{position:fixed;bottom:22px;left:22px;z-index:180;display:inline-flex;align-items:center;gap:10px;
+  background:var(--green-deep);color:#fff;border:0;cursor:pointer;font-family:inherit;font-weight:800;font-size:15px;
+  border-radius:50px;padding:14px 20px;box-shadow:0 14px 34px rgba(15,122,64,.4);
+  transition:transform .18s,box-shadow .18s}
+.ai-fab:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(15,122,64,.5)}
+.ai-fab .em{font-size:20px}
+.ai-fab.hide{transform:translateY(20px) scale(.9);opacity:0;pointer-events:none}
+
+.ai-chat{position:fixed;bottom:22px;left:22px;z-index:190;width:360px;max-width:calc(100vw - 32px);
+  max-height:70vh;background:var(--card);border-radius:22px;box-shadow:var(--shadow-lg);
+  display:flex;flex-direction:column;overflow:hidden;
+  transform:translateY(30px) scale(.96);opacity:0;pointer-events:none;
+  transition:transform .26s cubic-bezier(.2,.8,.3,1),opacity .26s;transform-origin:bottom right}
+.ai-chat.open{transform:none;opacity:1;pointer-events:auto}
+.ai-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;
+  background:linear-gradient(135deg,var(--green-deep),var(--green));color:#fff}
+.ai-head .who{display:flex;align-items:center;gap:9px;font-weight:900;font-size:16px}
+.ai-head .who .av{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.22);display:grid;place-items:center;font-size:18px}
+.ai-head .who small{display:block;font-weight:500;font-size:11px;opacity:.85}
+.ai-head .x{background:none;border:0;color:#fff;font-size:24px;cursor:pointer;line-height:1;opacity:.9}
+.ai-head .x:hover{opacity:1}
+
+.ai-body{flex:1;overflow-y:auto;padding:16px;background:var(--bg);display:flex;flex-direction:column;gap:10px}
+.ai-intro{color:var(--muted);font-size:14px;line-height:1.5}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.chip{background:var(--card);border:1px solid var(--line);color:var(--green-deep);font-family:inherit;font-weight:700;
+  font-size:13px;border-radius:50px;padding:8px 13px;cursor:pointer;transition:background .15s,border-color .15s}
+.chip:hover{background:var(--green-soft);border-color:var(--green)}
+
+.msg{max-width:82%;padding:10px 14px;border-radius:16px;font-size:14.5px;line-height:1.45;white-space:pre-wrap;
+  animation:pop .2s ease}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg.me{align-self:flex-start;background:var(--green-deep);color:#fff;border-bottom-right-radius:5px}
+.msg.ai{align-self:flex-end;background:var(--card);border:1px solid var(--line);color:var(--ink);border-bottom-left-radius:5px;
+  display:flex;gap:8px}
+.msg.ai .av{flex:0 0 auto;font-size:18px;line-height:1.2}
+.msg.typing{align-self:flex-end}
+.dots{display:inline-flex;gap:4px;align-items:center;padding:4px 2px}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--muted);opacity:.5;animation:blink 1.2s infinite}
+.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+
+.ai-input{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);background:var(--card)}
+.ai-input input{flex:1;border:1px solid var(--line);border-radius:50px;padding:11px 16px;font-family:inherit;
+  font-size:14.5px;outline:none;transition:border-color .15s}
+.ai-input input:focus{border-color:var(--green)}
+.ai-input .send{flex:0 0 auto;width:44px;height:44px;border-radius:50%;border:0;background:var(--green-deep);
+  color:#fff;font-size:18px;cursor:pointer;display:grid;place-items:center;transition:transform .15s,background .15s}
+.ai-input .send:hover{transform:scale(1.07)}
+.ai-input .send:disabled{background:var(--line);cursor:default;transform:none}
+</style>
+</head>
+<body>
+
+<div class="demo-flag">🦥 דמו פורטל · <b>השקעות לעצלנים</b> · עמוד שיעור עם מורה AI</div>
+
+<header class="topbar"><div class="wrap">
+  <div class="brand"><span class="sloth">🦥</span> השקעות לעצלנים</div>
+  <nav class="nav">
+    <a href="index.html">הבית שלי</a>
+    <a href="lesson.html" class="active">הקורס</a>
+    <a href="game.html">משחק תרגול</a>
+    <a href="community.html">הקהילה</a>
+    <a href="calculator.html">מחשבונים</a>
+  </nav>
+  <div class="me"><a href="admin.html" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);font-weight:600" title="מבט הבעלים">⚙️ ניהול</a><a href="profile.html" style="display:flex;align-items:center;gap:10px"><div style="text-align:left"><div style="font-weight:700;line-height:1.1">דנה</div><small>חברה מאז 2026</small></div><div class="avatar">ד</div></a></div>
+</div></header>
+
+<main class="wrap">
+  <div class="lesson-grid">
+
+    <!-- LEFT / main -->
+    <div class="lesson-main">
+      <div class="video" id="video" role="button" tabindex="0" aria-label="נגן את השיעור">
+        <div class="vtitle"><small>שלב 4 · הרכבת התיק שלך</small><span id="vtitle-txt"></span></div>
+        <div class="play" aria-hidden="true"></div>
+        <div class="dur" id="vdur"></div>
+      </div>
+
+      <h1 id="lesson-title"></h1>
+      <div class="lead-meta" id="lesson-meta"></div>
+      <div class="lesson-body" id="lesson-body"></div>
+
+      <div class="callout">
+        <div class="lab">🦥 שורה תחתונה לעצלן</div>
+        <p id="lesson-takeaway"></p>
+      </div>
+
+      <div class="lesson-actions">
+        <button class="btn btn-green" id="markDone">סמן כהושלם ✓</button>
+        <a class="btn btn-yellow" href="game.html">תרגל את מה שלמדת 🎮</a>
+      </div>
+    </div>
+
+    <!-- RIGHT / sidebar -->
+    <aside class="side">
+      <div class="panel">
+        <h3>פרקי השלב</h3>
+        <div class="sub" id="side-sub">שלב 4 · הרכבת התיק שלך</div>
+        <div id="chapters"></div>
+        <div class="prog">
+          <div class="row"><span>ההתקדמות שלך בשלב</span><span>35%</span></div>
+          <div class="bar"><i style="width:35%"></i></div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</main>
+
+<footer><div class="wrap"><div>© השקעות לעצלנים · הדרך הקלה להשקעות פסיביות 🦥</div><div class="credit">נבנה ע"י הלל</div></div></footer>
+
+<!-- AI teacher -->
+<button class="ai-fab" id="aiFab"><span class="em">🦥</span> שאל את המורה</button>
+
+<div class="ai-chat" id="aiChat" role="dialog" aria-label="המורה הדיגיטלי">
+  <div class="ai-head">
+    <div class="who"><span class="av">🦥</span><div>המורה הדיגיטלי<small>עונה תוך שניות</small></div></div>
+    <button class="x" id="aiClose" aria-label="סגור">×</button>
+  </div>
+  <div class="ai-body" id="aiBody"></div>
+  <form class="ai-input" id="aiForm">
+    <input id="aiInput" type="text" placeholder="כתוב כאן שאלה…" autocomplete="off" aria-label="שאלה למורה">
+    <button class="send" type="submit" id="aiSend" aria-label="שלח">↑</button>
+  </form>
+</div>
+
+<script src="data/content.js"></script>
+<script src="assets/portal.js"></script>
+<script>
+(function(){
+  var L = (window.LAZY || {});
+  var lesson = L.lesson || {body:[]};
+  var ai = L.ai || {suggestions:[], qa:[], fallback:''};
+
+  /* ---------- render lesson ---------- */
+  document.getElementById('vtitle-txt').textContent = 'שלב 4 · ' + (lesson.title || '');
+  document.getElementById('vdur').textContent = '⏱ ' + (lesson.videoMins || '');
+  document.getElementById('lesson-title').textContent = lesson.title || '';
+
+  var mod = (L.modules || []).find(function(m){ return m.n === 4; });
+  document.getElementById('lesson-meta').textContent =
+    'שלב ' + (lesson.module || 4) + ' · ' + (mod ? mod.title : '') + ' · וידאו ' + (lesson.videoMins || '');
+
+  var bodyEl = document.getElementById('lesson-body');
+  (lesson.body || []).forEach(function(p){
+    var el = document.createElement('p'); el.textContent = p; bodyEl.appendChild(el);
+  });
+  document.getElementById('lesson-takeaway').textContent = lesson.takeaway || '';
+
+  /* video placeholder = playful demo nudge */
+  function playPoke(){
+    if (window.Portal) Portal.toast('זהו דמו, בגרסה החיה הסרטון יתנגן כאן 🦥');
+  }
+  var vid = document.getElementById('video');
+  vid.addEventListener('click', playPoke);
+  vid.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); playPoke(); }});
+
+  /* ---------- sidebar chapters (module 4) ---------- */
+  var chapsWrap = document.getElementById('chapters');
+  var chapters = (mod && mod.chapters) || [];
+  // lesson is chapter 1 (active). earlier = none before; mark first active, rest locked-ish.
+  // We treat the active lesson as chapter index 0; show checks only if there were earlier-done ones.
+  chapters.forEach(function(title, i){
+    var row = document.createElement('div');
+    var state = i === 0 ? 'active' : 'todo';
+    row.className = 'chap' + (state==='active' ? ' active' : '');
+    var dotTxt = (i+1);
+    var tag = '';
+    if (state === 'active') tag = '<span class="nowtag">משחק עכשיו ▶</span>';
+    row.innerHTML =
+      '<div class="dot">' + dotTxt + '</div>' +
+      '<div class="txt">' + title + (tag ? '<br>' + tag : '') + '</div>';
+    chapsWrap.appendChild(row);
+  });
+  if (!chapters.length){
+    chapsWrap.innerHTML = '<div class="sub">פרקי השלב יופיעו כאן.</div>';
+  }
+
+  /* ---------- mark complete ---------- */
+  document.getElementById('markDone').addEventListener('click', function(){
+    if (window.Portal) Portal.toast('כל הכבוד! התקדמת בקורס 🦥');
+  });
+
+  /* ---------- AI teacher ---------- */
+  var fab = document.getElementById('aiFab');
+  var chat = document.getElementById('aiChat');
+  var body = document.getElementById('aiBody');
+  var form = document.getElementById('aiForm');
+  var input = document.getElementById('aiInput');
+  var built = false, busy = false;
+
+  function openChat(){
+    chat.classList.add('open'); fab.classList.add('hide');
+    if (!built){ buildIntro(); built = true; }
+    setTimeout(function(){ input.focus(); }, 280);
+  }
+  function closeChat(){ chat.classList.remove('open'); fab.classList.remove('hide'); }
+
+  fab.addEventListener('click', openChat);
+  document.getElementById('aiClose').addEventListener('click', closeChat);
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape' && chat.classList.contains('open')) closeChat(); });
+
+  function buildIntro(){
+    var intro = document.createElement('div');
+    intro.className = 'ai-intro';
+    intro.textContent = ai.intro || '';
+    body.appendChild(intro);
+
+    var chips = document.createElement('div');
+    chips.className = 'chips';
+    (ai.suggestions || []).forEach(function(s){
+      var c = document.createElement('button');
+      c.type = 'button'; c.className = 'chip'; c.textContent = s;
+      c.addEventListener('click', function(){ send(s); });
+      chips.appendChild(c);
+    });
+    body.appendChild(chips);
+  }
+
+  function addMsg(text, who){
+    var m = document.createElement('div');
+    m.className = 'msg ' + who;
+    if (who === 'ai'){
+      m.innerHTML = '<span class="av">🦥</span><span class="t"></span>';
+      m.querySelector('.t').textContent = text;
+    } else {
+      m.textContent = text;
+    }
+    body.appendChild(m);
+    body.scrollTop = body.scrollHeight;
+    return m;
+  }
+
+  function addTyping(){
+    var m = document.createElement('div');
+    m.className = 'msg ai typing';
+    m.innerHTML = '<span class="av">🦥</span><span class="dots"><i></i><i></i><i></i></span>';
+    body.appendChild(m);
+    body.scrollTop = body.scrollHeight;
+    return m;
+  }
+
+  function answerFor(text){
+    var t = (text || '').toLowerCase();
+    var qa = ai.qa || [];
+    for (var i = 0; i < qa.length; i++){
+      var keys = qa[i].k || [];
+      for (var j = 0; j < keys.length; j++){
+        if (t.indexOf(String(keys[j]).toLowerCase()) !== -1) return qa[i].a;
+      }
+    }
+    return ai.fallback || '';
+  }
+
+  function send(text){
+    text = (text || '').trim();
+    if (!text || busy) return;
+    addMsg(text, 'me');
+    input.value = '';
+    busy = true; updateSend();
+    var typing = addTyping();
+    setTimeout(function(){
+      typing.remove();
+      addMsg(answerFor(text), 'ai');
+      busy = false; updateSend();
+    }, 600);
+  }
+
+  function updateSend(){ document.getElementById('aiSend').disabled = busy; }
+
+  form.addEventListener('submit', function(e){ e.preventDefault(); send(input.value); });
+
+  /* ---------- first-load nudge ---------- */
+  setTimeout(function(){
+    if (window.Portal){
+      Portal.popup({
+        emoji:'🦥',
+        title:'יש לך מורה אישי',
+        text:'נתקעת? לחץ על "שאל את המורה" בכל רגע ושאל כל שאלה. אין שאלה טיפשית.',
+        ctaText:'מגניב, הבנתי',
+        onceKey:'lesson_ai_intro'
+      });
+    }
+  }, 1200);
+})();
+</script>
+</body>
+</html>
