@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E🦥%3C/text%3E%3C/svg%3E">
+<title>השקעות לעצלנים · כניסה לפורטל</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<link href="assets/brand.css" rel="stylesheet">
+<style>
+  /* login-specific */
+  body{min-height:100vh;display:flex;flex-direction:column}
+  .stage{
+    flex:1;display:grid;place-items:center;padding:26px 18px 44px;position:relative;overflow:hidden;
+    background:
+      radial-gradient(1100px 600px at 80% -10%, var(--yellow-soft) 0%, transparent 55%),
+      radial-gradient(900px 600px at 0% 110%, var(--green-soft) 0%, transparent 55%),
+      linear-gradient(155deg, #f5faf6 0%, #eaf6ee 100%);
+  }
+  /* giant faint sloth watermark */
+  .stage::before{
+    content:"🦥";position:absolute;right:-60px;bottom:-90px;font-size:520px;line-height:1;
+    opacity:.05;transform:rotate(-10deg);pointer-events:none;user-select:none;
+  }
+  .stage::after{
+    content:"📈";position:absolute;left:-30px;top:-30px;font-size:200px;line-height:1;
+    opacity:.04;transform:rotate(12deg);pointer-events:none;user-select:none;
+  }
+
+  .card{
+    position:relative;z-index:2;width:100%;max-width:420px;
+    background:rgba(255,255,255,.78);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,.7);border-radius:26px;
+    box-shadow:var(--shadow-lg);padding:34px 30px 26px;
+  }
+
+  /* brand lockup */
+  .lockup{text-align:center;margin-bottom:22px}
+  .lockup .sloth{
+    width:64px;height:64px;margin:0 auto 12px;display:grid;place-items:center;font-size:36px;
+    background:var(--green-soft);border-radius:18px;box-shadow:0 6px 16px rgba(15,122,64,.14);
+  }
+  .lockup h1{font-size:24px;font-weight:900;color:var(--green-deep);letter-spacing:-.4px}
+  .lockup p{color:var(--muted);font-size:14px;margin-top:4px}
+
+  /* tabs */
+  .tabs{display:flex;gap:6px;background:#eef3f0;border-radius:14px;padding:5px;margin-bottom:22px}
+  .tabs button{
+    flex:1;border:0;cursor:pointer;font-family:inherit;font-weight:700;font-size:15px;color:var(--muted);
+    padding:11px 0;border-radius:10px;background:transparent;transition:all .2s;
+  }
+  .tabs button.active{background:var(--card);color:var(--green-deep);box-shadow:0 4px 12px rgba(15,122,64,.12)}
+
+  /* fields */
+  .field{margin-bottom:14px;display:none}
+  .field.show{display:block}
+  .field label{display:block;font-weight:600;font-size:13px;color:var(--ink);margin-bottom:6px}
+  .field input{
+    width:100%;font-family:inherit;font-size:15px;color:var(--ink);
+    background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:13px 14px;transition:border-color .2s,box-shadow .2s;
+  }
+  .field input::placeholder{color:#a7b3ad}
+  .field input:focus{outline:0;border-color:var(--green);box-shadow:0 0 0 4px rgba(31,158,87,.14)}
+
+  .forgot{text-align:left;margin:-4px 0 18px}
+  .forgot a{color:var(--green-deep);font-weight:600;font-size:13px;cursor:pointer}
+  .forgot a:hover{text-decoration:underline}
+
+  .btn.full{width:100%;justify-content:center;font-size:16px;padding:14px}
+
+  /* divider */
+  .divider{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:13px;margin:18px 0}
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  /* google btn */
+  .btn-google{
+    width:100%;justify-content:center;background:var(--card);color:var(--ink);
+    border:1.5px solid var(--line);box-shadow:0 4px 12px rgba(15,36,28,.05);font-size:15px;padding:13px;
+  }
+  .btn-google:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(15,36,28,.09)}
+  .btn-google svg{width:19px;height:19px}
+
+  /* signup note */
+  .signup-note{display:none;margin-top:18px;text-align:center;background:var(--yellow-soft);border-radius:13px;padding:12px 14px;font-size:13.5px;color:#8a6a0c;font-weight:600}
+  .signup-note.show{display:block}
+  .signup-note a{color:var(--green-deep);font-weight:800;cursor:pointer}
+  .signup-note a:hover{text-decoration:underline}
+
+  /* credit */
+  .credit{text-align:center;margin-top:20px;color:var(--muted);font-size:12px}
+  .credit b{color:var(--green-deep);font-weight:700}
+
+  @media(max-width:440px){
+    .card{padding:28px 22px 22px}
+    .stage::before{font-size:380px;right:-40px}
+  }
+</style>
+</head>
+<body>
+
+<div class="demo-flag">🦥 דמו פורטל · <b>השקעות לעצלנים</b> · מסך כניסה</div>
+
+<main class="stage">
+  <div class="card">
+
+    <div class="lockup">
+      <div class="sloth">🦥</div>
+      <h1>השקעות לעצלנים</h1>
+      <p>הדרך הקלה להשקעות פסיביות</p>
+    </div>
+
+    <div class="tabs">
+      <button id="tabLogin" class="active" type="button">התחברות</button>
+      <button id="tabSignup" type="button">הרשמה</button>
+    </div>
+
+    <form id="authForm" novalidate>
+      <div class="field" id="fldName">
+        <label for="name">שם מלא</label>
+        <input type="text" id="name" name="name" placeholder="ישראל ישראלי" autocomplete="name">
+      </div>
+
+      <div class="field show">
+        <label for="email">אימייל</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+      </div>
+
+      <div class="field show">
+        <label for="password">סיסמה</label>
+        <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
+      </div>
+
+      <div class="forgot" id="forgotRow">
+        <a id="forgotLink">שכחת סיסמה?</a>
+      </div>
+
+      <button type="submit" class="btn btn-green full" id="primaryBtn">כניסה לפורטל</button>
+    </form>
+
+    <div class="divider">או</div>
+
+    <button type="button" class="btn btn-google" id="googleBtn">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.5 29.5 4.5 24 4.5 13.2 4.5 4.5 13.2 4.5 24S13.2 43.5 24 43.5 43.5 34.8 43.5 24c0-1.2-.1-2.4-.4-3.5z"/>
+        <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.5 29.5 4.5 24 4.5 16.3 4.5 9.7 8.9 6.3 14.7z"/>
+        <path fill="#4CAF50" d="M24 43.5c5.4 0 10.3-2.1 14-5.4l-6.5-5.5c-2 1.5-4.6 2.4-7.5 2.4-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.6 39 16.2 43.5 24 43.5z"/>
+        <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.5 5.5c-.5.4 7-5 7-15 0-1.2-.1-2.4-.4-3.5z"/>
+      </svg>
+      המשך עם Google
+    </button>
+
+    <div class="signup-note" id="signupNote">
+      חדש כאן? ענה על שאלון ההתאמה הקצר <a id="quizLink">←</a>
+    </div>
+
+    <div class="credit">נבנה ע"י <b>הלל</b></div>
+
+  </div>
+</main>
+
+<script src="assets/portal.js"></script>
+<script>
+  (function(){
+    var mode = 'login'; // login | signup
+    var tabLogin   = document.getElementById('tabLogin');
+    var tabSignup  = document.getElementById('tabSignup');
+    var fldName    = document.getElementById('fldName');
+    var forgotRow  = document.getElementById('forgotRow');
+    var primaryBtn = document.getElementById('primaryBtn');
+    var signupNote = document.getElementById('signupNote');
+    var pwInput    = document.getElementById('password');
+
+    function setMode(m){
+      mode = m;
+      var signup = m === 'signup';
+      tabSignup.classList.toggle('active', signup);
+      tabLogin.classList.toggle('active', !signup);
+      fldName.classList.toggle('show', signup);
+      signupNote.classList.toggle('show', signup);
+      forgotRow.style.display = signup ? 'none' : 'block';
+      primaryBtn.textContent = signup ? 'יצירת חשבון' : 'כניסה לפורטל';
+      pwInput.setAttribute('autocomplete', signup ? 'new-password' : 'current-password');
+    }
+
+    tabLogin.addEventListener('click', function(){ setMode('login'); });
+    tabSignup.addEventListener('click', function(){ setMode('signup'); });
+
+    function enter(){
+      Portal.toast('מתחבר…');
+      setTimeout(function(){ location.href = 'index.html'; }, 700);
+    }
+
+    document.getElementById('authForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      enter();
+    });
+
+    document.getElementById('googleBtn').addEventListener('click', enter);
+
+    document.getElementById('forgotLink').addEventListener('click', function(){
+      Portal.toast('נשלח קישור לאיפוס 📧');
+    });
+
+    document.getElementById('quizLink').addEventListener('click', function(){
+      location.href = 'quiz.html';
+    });
+
+    setMode('login');
+  })();
+</script>
+</body>
+</html>
