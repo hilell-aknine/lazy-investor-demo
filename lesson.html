@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E🦥%3C/text%3E%3C/svg%3E">
 <title>השיעור שלי · השקעות לעצלנים 🦥</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
@@ -38,13 +39,20 @@
 .callout .lab{display:flex;align-items:center;gap:8px;font-weight:900;color:#9a7400;margin-bottom:6px;font-size:15px}
 .callout p{margin:0;font-weight:600;color:#5a4500;font-size:16px}
 .lesson-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.lesson-nav{display:flex;gap:12px;justify-content:space-between;margin-top:16px}
+.lesson-nav .btn{flex:1;justify-content:center}
+.lesson-nav .btn.disabled{opacity:.4;pointer-events:none}
+.lesson-disclaimer{margin-top:22px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px;line-height:1.6}
+.chap.linkable{cursor:pointer}
+.chap.linkable:hover{background:var(--green-soft)}
+.chap.done .nowtag{color:var(--green-deep)}
 
 /* sidebar chapters */
 .side .panel{padding:20px}
 .side h3{font-size:17px;font-weight:900;margin-bottom:4px}
 .side .sub{color:var(--muted);font-size:13px;margin-bottom:14px}
 .chap{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:13px;margin-bottom:6px;
-  transition:background .15s;cursor:default}
+  transition:background .15s;cursor:default;text-decoration:none;color:var(--ink)}
 .chap:hover{background:var(--green-soft)}
 .chap.active{background:var(--green-soft)}
 .chap .dot{flex:0 0 26px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
@@ -132,7 +140,7 @@
     <!-- LEFT / main -->
     <div class="lesson-main">
       <div class="video" id="video" role="button" tabindex="0" aria-label="נגן את השיעור">
-        <div class="vtitle"><small>שלב 4 · הרכבת התיק שלך</small><span id="vtitle-txt"></span></div>
+        <div class="vtitle"><small id="vtitle-stage"></small><span id="vtitle-txt"></span></div>
         <div class="play" aria-hidden="true"></div>
         <div class="dur" id="vdur"></div>
       </div>
@@ -150,6 +158,13 @@
         <button class="btn btn-green" id="markDone">סמן כהושלם ✓</button>
         <a class="btn btn-yellow" href="game.html">תרגל את מה שלמדת 🎮</a>
       </div>
+
+      <div class="lesson-nav" id="lessonNav">
+        <a class="btn btn-ghost" id="prevBtn">→ הפרק הקודם</a>
+        <a class="btn btn-ghost" id="nextBtn">הפרק הבא ←</a>
+      </div>
+
+      <p class="lesson-disclaimer" id="lessonDisclaimer"></p>
     </div>
 
     <!-- RIGHT / sidebar -->
@@ -159,8 +174,8 @@
         <div class="sub" id="side-sub">שלב 4 · הרכבת התיק שלך</div>
         <div id="chapters"></div>
         <div class="prog">
-          <div class="row"><span>ההתקדמות שלך בשלב</span><span>35%</span></div>
-          <div class="bar"><i style="width:35%"></i></div>
+          <div class="row"><span>ההתקדמות שלך בשלב</span><span id="progPct">0%</span></div>
+          <div class="bar"><i id="progBar" style="width:0%"></i></div>
         </div>
       </div>
     </aside>
@@ -190,46 +205,67 @@
 <script>
 (function(){
   var L = (window.LAZY || {});
-  var lesson = L.lesson || {body:[]};
+  var modules = L.modules || [];
+  var lessons = L.lessons || [];
   var ai = L.ai || {suggestions:[], qa:[], fallback:''};
 
+  /* ---------- which lesson? (?m=&c=, default = active module first chapter) ---------- */
+  function qp(name){
+    var m = new RegExp('[?&]' + name + '=([^&]+)').exec(location.search);
+    return m ? parseInt(decodeURIComponent(m[1]), 10) : null;
+  }
+  var activeMod = (modules.find(function(m){ return m.state === 'now'; }) || modules[0] || {n:1});
+  var mNum = qp('m') || activeMod.n;
+  var cNum = qp('c') || 1;
+
+  function findLesson(m, c){ return lessons.find(function(l){ return l.m===m && l.c===c; }); }
+  var lesson = findLesson(mNum, cNum) || findLesson(activeMod.n, 1) || lessons[0] || {body:[], title:''};
+  mNum = lesson.m; cNum = lesson.c;
+  var mod = modules.find(function(m){ return m.n === mNum; }) || {title:'', chapters:[]};
+
   /* ---------- render lesson ---------- */
-  document.getElementById('vtitle-txt').textContent = 'שלב 4 · ' + (lesson.title || '');
+  document.getElementById('vtitle-stage').textContent = 'שלב ' + mNum + ' · ' + (mod.title || '');
+  document.getElementById('vtitle-txt').textContent = lesson.title || '';
   document.getElementById('vdur').textContent = '⏱ ' + (lesson.videoMins || '');
   document.getElementById('lesson-title').textContent = lesson.title || '';
+  document.getElementById('side-sub').textContent = 'שלב ' + mNum + ' · ' + (mod.title || '');
 
-  var mod = (L.modules || []).find(function(m){ return m.n === 4; });
   document.getElementById('lesson-meta').textContent =
-    'שלב ' + (lesson.module || 4) + ' · ' + (mod ? mod.title : '') + ' · וידאו ' + (lesson.videoMins || '');
+    'שלב ' + mNum + ' · ' + (mod.title || '') + ' · פרק ' + cNum + ' מתוך ' + (mod.chapters || []).length +
+    ' · וידאו ' + (lesson.videoMins || '');
 
   var bodyEl = document.getElementById('lesson-body');
+  bodyEl.innerHTML = '';
   (lesson.body || []).forEach(function(p){
     var el = document.createElement('p'); el.textContent = p; bodyEl.appendChild(el);
   });
   document.getElementById('lesson-takeaway').textContent = lesson.takeaway || '';
+  document.getElementById('lessonDisclaimer').textContent = L.disclaimer || '';
 
   /* video placeholder = playful demo nudge */
   function playPoke(){
-    if (window.Portal) Portal.toast('זהו דמו, בגרסה החיה הסרטון יתנגן כאן 🦥');
+    if (window.Portal) Portal.toast('זהו דמו, בגרסה החיה הסרטון של תמיר יתנגן כאן 🦥');
   }
   var vid = document.getElementById('video');
   vid.addEventListener('click', playPoke);
   vid.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); playPoke(); }});
 
-  /* ---------- sidebar chapters (module 4) ---------- */
+  /* ---------- sidebar chapters (this module) ---------- */
   var chapsWrap = document.getElementById('chapters');
   var chapters = (mod && mod.chapters) || [];
-  // lesson is chapter 1 (active). earlier = none before; mark first active, rest locked-ish.
-  // We treat the active lesson as chapter index 0; show checks only if there were earlier-done ones.
+  chapsWrap.innerHTML = '';
   chapters.forEach(function(title, i){
-    var row = document.createElement('div');
-    var state = i === 0 ? 'active' : 'todo';
-    row.className = 'chap' + (state==='active' ? ' active' : '');
-    var dotTxt = (i+1);
-    var tag = '';
-    if (state === 'active') tag = '<span class="nowtag">משחק עכשיו ▶</span>';
+    var ci = i + 1;
+    var has = !!findLesson(mNum, ci);
+    var isActive = ci === cNum;
+    var isDone = ci < cNum; // earlier chapters in this module shown as done
+    var row = document.createElement('a');
+    row.className = 'chap' + (isActive ? ' active' : '') + (isDone ? ' done' : '') + (has && !isActive ? ' linkable' : '');
+    if (has && !isActive) row.href = 'lesson.html?m=' + mNum + '&c=' + ci;
+    var dotInner = isDone ? '✓' : ci;
+    var tag = isActive ? '<span class="nowtag">קורא עכשיו ▶</span>' : '';
     row.innerHTML =
-      '<div class="dot">' + dotTxt + '</div>' +
+      '<div class="dot">' + dotInner + '</div>' +
       '<div class="txt">' + title + (tag ? '<br>' + tag : '') + '</div>';
     chapsWrap.appendChild(row);
   });
@@ -237,9 +273,28 @@
     chapsWrap.innerHTML = '<div class="sub">פרקי השלב יופיעו כאן.</div>';
   }
 
+  /* sidebar progress = position within the module */
+  var prog = chapters.length ? Math.round((cNum / chapters.length) * 100) : 0;
+  document.getElementById('progPct').textContent = prog + '%';
+  document.getElementById('progBar').style.width = prog + '%';
+
+  /* ---------- prev / next navigation (across modules) ---------- */
+  var idx = lessons.indexOf(lesson);
+  var prev = idx > 0 ? lessons[idx - 1] : null;
+  var next = idx >= 0 && idx < lessons.length - 1 ? lessons[idx + 1] : null;
+  var prevBtn = document.getElementById('prevBtn');
+  var nextBtn = document.getElementById('nextBtn');
+  if (prev) prevBtn.href = 'lesson.html?m=' + prev.m + '&c=' + prev.c; else prevBtn.classList.add('disabled');
+  if (next) nextBtn.href = 'lesson.html?m=' + next.m + '&c=' + next.c; else nextBtn.classList.add('disabled');
+
   /* ---------- mark complete ---------- */
   document.getElementById('markDone').addEventListener('click', function(){
-    if (window.Portal) Portal.toast('כל הכבוד! התקדמת בקורס 🦥');
+    if (next){
+      if (window.Portal) Portal.toast('כל הכבוד! ממשיכים לפרק הבא 🦥');
+      setTimeout(function(){ location.href = 'lesson.html?m=' + next.m + '&c=' + next.c; }, 650);
+    } else {
+      if (window.Portal) Portal.toast('סיימת את כל הקורס! אלוף 🏆');
+    }
   });
 
   /* ---------- AI teacher ---------- */

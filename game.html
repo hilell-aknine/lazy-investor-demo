@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E🦥%3C/text%3E%3C/svg%3E">
 <title>משחק תרגול · השקעות לעצלנים 🦥</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
@@ -150,8 +151,10 @@
 <script src="assets/portal.js"></script>
 <script>
 (function(){
-  const QUESTIONS = (window.LAZY && Array.isArray(LAZY.game)) ? LAZY.game : [];
-  const TOTAL = QUESTIONS.length;
+  const ALL = (window.LAZY && Array.isArray(LAZY.game)) ? LAZY.game : [];
+  const ROUND_SIZE = 10;            // מנה רעננה לכל סבב מתוך מאגר השאלות
+  let QUESTIONS = [];               // הדק של הסבב הנוכחי
+  let TOTAL = 0;
   const MAX_HEARTS = 3;
   const XP_PER = 10;
   const KEYS = ['א','ב','ג','ד'];
@@ -377,11 +380,23 @@
       </div>`;
   }
 
+  function buildRound(){
+    // ערבול עותק של מאגר השאלות (Fisher-Yates) ולקיחת מנה
+    const deck = ALL.slice();
+    for(let i=deck.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [deck[i],deck[j]] = [deck[j],deck[i]];
+    }
+    QUESTIONS = deck.slice(0, Math.min(ROUND_SIZE, deck.length));
+    TOTAL = QUESTIONS.length;
+  }
+
   function start(){
-    if(!TOTAL){
+    if(!ALL.length){
       card.innerHTML = '<div class="end"><span class="big-sloth">🦥</span><h2>אין שאלות עדיין</h2><div class="sub">המשחק יתמלא בקרוב. בינתיים אפשר לחזור לקורס.</div><div class="end-actions"><a class="btn btn-green" href="lesson.html">📚 חזור לקורס</a></div></div>';
       return;
     }
+    buildRound();
     reset();
     renderQuestion();
   }

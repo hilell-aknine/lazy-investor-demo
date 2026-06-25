@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E🦥%3C/text%3E%3C/svg%3E">
 <title>השקעות לעצלנים · סיכומי שיעור</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
@@ -119,7 +120,7 @@
         <ul class="points">${points}</ul>
         <div class="topics">${topics}</div>
         <div class="scard-foot">
-          <a class="watch" href="lesson.html">▶ לצפייה בשיעור</a>
+          <a class="watch" href="lesson.html?m=${esc(s.n)}&c=1">▶ לצפייה בשיעור</a>
         </div>
       </article>`;
   }

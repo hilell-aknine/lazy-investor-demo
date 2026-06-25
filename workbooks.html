@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E🦥%3C/text%3E%3C/svg%3E">
 <title>השקעות לעצלנים · חוברות עבודה</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
@@ -168,15 +169,29 @@
   }
   function closePreview(){ mov.classList.remove('show'); }
 
+  // ===== real download (opens the actual PDF) =====
+  function download(b){
+    if(!b || !b.file){ Portal.toast('הקובץ יתווסף בקרוב 🦥'); return; }
+    const a = document.createElement('a');
+    a.href = b.file;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.setAttribute('download', '');
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    Portal.toast('פותח את החוברת 📥');
+  }
+
   document.getElementById('wbClose').onclick = closePreview;
   mov.onclick = e => { if(e.target === mov) closePreview(); };
   document.addEventListener('keydown', e => { if(e.key === 'Escape') closePreview(); });
-  modalDl.onclick = () => { closePreview(); Portal.toast('המסמך יורד 📥'); };
+  modalDl.onclick = () => { closePreview(); download(current); };
 
   // ===== delegated card actions =====
   grid.addEventListener('click', e => {
     const dl = e.target.closest('.wb-dl');
-    if(dl){ Portal.toast('המסמך יורד 📥'); return; }
+    if(dl){ download(books[+dl.getAttribute('data-idx')]); return; }
     const pv = e.target.closest('.wb-prev');
     if(pv){ openPreview(books[+pv.getAttribute('data-idx')]); }
   });
